@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 @Data
 public class GameState {
+    private static final Random RNG = new Random();
     private static GameState instance = new GameState();
 
     private List<Player> players = new ArrayList<>();
@@ -22,7 +23,7 @@ public class GameState {
     private Instant playTimestamp = Instant.now();
     private Instant startedAt = Instant.now();
     private int round = 0;
-    private int scoreLimit = 10;
+    private int scoreLimit = 5;
 
     private Deck whiteCardDrawPile = new Deck();
     private Deck blackCardDrawPile = new Deck();
@@ -33,6 +34,7 @@ public class GameState {
     private List<Pair<Player, List<String>>> submissions = new ArrayList<>();
     private Player roundWinner = null;
     private boolean skippedOnce = false;
+    private Player winner = null;
 
     private GameState() {
         setupDecks();
@@ -83,6 +85,7 @@ public class GameState {
     }
 
     public void startGame() {
+        endGame();
         prepareForNewGame();
         status = GameStatus.PLAYING;
         startedAt = Instant.now();
@@ -99,6 +102,17 @@ public class GameState {
         submissions = new ArrayList<>();
         currentBlackCard = null;
         roundWinner = null;
+        winner = null;
+        cardCzar = RNG.nextInt(players.size());
+
+        if (players.size() < 5) {
+            scoreLimit = 8;
+        } else if (players.size() < 8) {
+            scoreLimit = 5;
+        } else {
+            scoreLimit = 3;
+        }
+
         setupDecks();
     }
 
@@ -272,20 +286,32 @@ public class GameState {
         if (playPhase == PlayPhase.DELIBERATING) {
             playPhase = PlayPhase.WINNING_ANSWER_PRESENTED;
             playTimestamp = Instant.now();
-            player.setScore(player.getScore() + 1);
+            int newPlayerScore = player.getScore() + 1;
+            player.setScore(newPlayerScore);
             roundWinner = player;
+
             broadcastThisGameState();
 
             new Timer().schedule(
                     new TimerTask() {
                         @Override
                         public void run() {
-                            // Proceed to next round
-                            endRound();
+                            if (newPlayerScore >= scoreLimit) {
+                                finishGameWithWinner(player);
+                            } else {
+                                // Proceed to next round
+                                endRound();
+                            }
                         }
                     }, 8000
             );
         }
+    }
+
+    private void finishGameWithWinner(Player winner) {
+        status = GameStatus.GAME_OVER;
+        this.winner = winner;
+        broadcastThisGameState();
     }
 
     private void endRound() {

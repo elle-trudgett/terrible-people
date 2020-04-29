@@ -149,11 +149,14 @@ public class GamePage extends VerticalLayout {
 
     private void updateUI() {
         getUI().ifPresent(ui -> ui.access(() -> {
-            boolean startGameButtonEnabled = currentGameState.getStatus() != GameStatus.PLAYING;
+            GameStatus gameStatus = currentGameState.getStatus();
+            boolean startGameButtonEnabled = gameStatus != GameStatus.PLAYING;
             startGameButtonEnabled &= currentGameState.getPlayers().size() > 1;
             startGameButtonEnabled &= player.isVip();
             gameMenuBar.getStartGameMenuItem().setEnabled(startGameButtonEnabled);
-            gameMenuBar.getEndGameMenuItem().setEnabled(player.isVip() && currentGameState.getStatus() == GameStatus.PLAYING);
+            gameMenuBar.getEndGameMenuItem().setEnabled(player.isVip() && gameStatus == GameStatus.PLAYING);
+
+            roundDisplayComponent.setVisible(gameStatus == GameStatus.PLAYING || gameStatus == GameStatus.GAME_OVER);
 
             boolean iAmCzar = amICzar();
             updateGameInfoHeader();
@@ -178,8 +181,7 @@ public class GamePage extends VerticalLayout {
 
             boolean showHandComponent = false;
 
-            if (currentGameState.getStatus() == GameStatus.PLAYING) {
-                roundDisplayComponent.setVisible(true);
+            if (gameStatus == GameStatus.PLAYING) {
                 switch (currentGameState.getPlayPhase()) {
                     case ANSWERING_QUESTION:
                         submissionsComponent.setVisible(false);
@@ -208,7 +210,6 @@ public class GamePage extends VerticalLayout {
             } else {
                 submissionsComponent.setVisible(false);
                 waitingOnComponent.setVisible(false);
-                roundDisplayComponent.setVisible(false);
             }
 
             handComponent.setVisible(showHandComponent);

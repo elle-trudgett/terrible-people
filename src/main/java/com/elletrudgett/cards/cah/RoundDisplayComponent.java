@@ -1,9 +1,6 @@
 package com.elletrudgett.cards.cah;
 
-import com.elletrudgett.cards.cah.game.Card;
-import com.elletrudgett.cards.cah.game.CardSpecialEffect;
-import com.elletrudgett.cards.cah.game.GameState;
-import com.elletrudgett.cards.cah.game.PlayPhase;
+import com.elletrudgett.cards.cah.game.*;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
@@ -18,6 +15,7 @@ import java.util.TimerTask;
 public class RoundDisplayComponent extends HorizontalLayout {
 
     private final CzarDisplayAreaComponent czarDisplayAreaComponent;
+    private final WinnerDisplayComponent winnerDisplayComponent;
     private Button skipButton;
 
     public RoundDisplayComponent(PlayerSubmission mySubmissionComponent, Runnable skipRunnable) {
@@ -32,15 +30,27 @@ public class RoundDisplayComponent extends HorizontalLayout {
         skipButton.addClickListener(event -> {
             skipRunnable.run();
         });
+
+        winnerDisplayComponent = new WinnerDisplayComponent();
+        winnerDisplayComponent.setVisible(false);
+        add(winnerDisplayComponent);
     }
 
     public void update(GameState gs, boolean iAmCzar) {
-        czarDisplayAreaComponent.update(gs);
-        if (iAmCzar && gs.getSubmissions().isEmpty() && !gs.isSkippedOnce()) {
-            skipButton.setVisible(true);
+        if (gs.getStatus() == GameStatus.PLAYING) {
+            czarDisplayAreaComponent.setVisible(true);
+            czarDisplayAreaComponent.update(gs);
+
+            if (iAmCzar && gs.getSubmissions().isEmpty() && !gs.isSkippedOnce()) {
+                skipButton.setVisible(true);
+            } else {
+                skipButton.setVisible(false);
+            }
         } else {
-            skipButton.setVisible(false);
+            czarDisplayAreaComponent.setVisible(false);
         }
+
+        winnerDisplayComponent.update(gs);
     }
 
     private class CzarDisplayAreaComponent extends VerticalLayout {
@@ -129,14 +139,13 @@ public class RoundDisplayComponent extends HorizontalLayout {
             setVisible(card != null);
             if (card != null) {
                 String cardContent = card.getContent();
+                specialEffectOverlayDiv.removeAll();
                 if (card.getEffects().contains(CardSpecialEffect.PICK_2)) {
-                    specialEffectOverlayDiv.removeAll();
                     specialEffectOverlayDiv.add("PICK");
                     Span numberSpan = new Span("2");
                     numberSpan.addClassName("tp-pick-number");
                     specialEffectOverlayDiv.add(numberSpan);
                 } else if (card.getEffects().contains(CardSpecialEffect.PICK_3)) {
-                    specialEffectOverlayDiv.removeAll();
                     specialEffectOverlayDiv.add("PICK");
                     Span numberSpan = new Span("3");
                     numberSpan.addClassName("tp-pick-number");

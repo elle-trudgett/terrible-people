@@ -98,6 +98,7 @@
 
 .tp-white-card {
     border: 1px solid #333;
+    background: linear-gradient(175deg, rgba(255, 255, 255,1) 0%, rgba(203,203,203,1) 100%)
 }
 
 .tp-hand {
@@ -141,7 +142,6 @@
 .tp-hand .tp-hand-card, .tp-submission, .tp-submission-blank {
     cursor: pointer;
 
-    background: #edeef0;
     display: inline-block;
     color: #090d10;
     padding: 0.5em;
@@ -323,4 +323,14 @@
     width: 1.5em;
     text-align: center;
     margin-left: 0.35em;
+}
+
+.tp-winner-display-component {
+    width: 100%;
+    text-align: center;
+}
+
+.tp-winner-image {
+    border-radius: 15%;
+    width: 9em;
 }

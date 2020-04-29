@@ -1,6 +1,7 @@
 package com.elletrudgett.cards.cah;
 
 import com.elletrudgett.cards.cah.game.GameState;
+import com.elletrudgett.cards.cah.game.GameStatus;
 import com.elletrudgett.cards.cah.game.Player;
 import com.vaadin.flow.component.contextmenu.ContextMenu;
 import com.vaadin.flow.component.contextmenu.MenuItem;
@@ -76,7 +77,7 @@ public class PlayersComponent extends ScrollPanel {
             if (player.isVip()) {
                 container.add(vipDiv);
             }
-            if (player == GameState.getInstance().getCardCzarPlayer()) {
+            if (player == GameState.getInstance().getCardCzarPlayer() && GameState.getInstance().getStatus() != GameStatus.WAITING) {
                 container.add(czarDiv);
             }
 
