@@ -3,7 +3,6 @@ package com.elletrudgett.cards.cah;
 import com.elletrudgett.cards.cah.game.GameState;
 import com.elletrudgett.cards.cah.game.GameStatus;
 import com.elletrudgett.cards.cah.game.Player;
-import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H5;
 import org.apache.commons.lang3.StringUtils;
@@ -36,9 +35,13 @@ public class GameProgressComponent extends Div {
         if (gameState.getStatus() == GameStatus.WAITING) {
             gameStatusText.setText("Waiting to start");
         } else if (gameState.getStatus() == GameStatus.PLAYING) {
-            gameStatusText.setText("Game in progress");
+            gameStatusText.setText("Game in progress (Round " + gameState.getRound() + ")");
         } else if (gameState.getStatus() == GameStatus.GAME_OVER) {
-            gameStatusText.setText("Game finished");
+            if (gameState.getWinner() != null) {
+                gameStatusText.setText("Game finished. Winner: " + gameState.getWinner().getName());
+            } else {
+                gameStatusText.setText("Game finished.");
+            }
         }
     }
 }

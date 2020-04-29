@@ -1,5 +1,6 @@
 .tp-winner .tp-submission {
     animation: rainbow-bg 3s linear infinite;
+    background: none;
 }
 
 @keyframes rainbow-bg{

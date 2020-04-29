@@ -22,7 +22,7 @@ public class GameState {
     private PlayPhase playPhase = PlayPhase.DRAWING_WHITE_CARDS;
     private Instant playTimestamp = Instant.now();
     private Instant startedAt = Instant.now();
-    private int round = 0;
+    private int round = 1;
     private int scoreLimit = 5;
 
     private Deck whiteCardDrawPile = new Deck();
@@ -60,7 +60,6 @@ public class GameState {
         playTimestamp = Instant.now();
 
         startedAt = Instant.now();
-        round = 0;
         resetPlayers();
         prepareForNewGame();
         broadcastThisGameState();
@@ -104,6 +103,7 @@ public class GameState {
         roundWinner = null;
         winner = null;
         cardCzar = RNG.nextInt(players.size());
+        round = 1;
 
         computeScoreLimit();
 
@@ -161,9 +161,12 @@ public class GameState {
                 Pair<Player, List<String>> submission = iterator.next();
                 Player submissionPlayer = submission.getKey();
                 // Remove submissions from this player who left
-                if (submissionPlayer.equals(player)) {
-                    iterator.remove();
-                }
+//                if (submissionPlayer.equals(player)) {
+//                    iterator.remove();
+//                }
+                // This is confusing as it can shuffle the cards right under the Czar's fingertips.
+                // leave it in for now.
+
                 // Return cards that were submitted by the new Czar to their hand
                 if (submissionPlayer.equals(getCardCzarPlayer())) {
                     for (String whiteCardContent : submission.getValue()) {
@@ -210,10 +213,6 @@ public class GameState {
     }
 
     public void addPlayer(Player player) {
-        if (status == GameStatus.PLAYING) {
-            throw new IllegalStateException("Cannot add player while game is playing Yet(TM)");
-        }
-
         // First check if they already exist and are valid
         Optional<Player> validatedPlayer = validatePlayer(player);
 
@@ -223,8 +222,14 @@ public class GameState {
             if (players.isEmpty()) {
                 player.setVip(true);
             }
+            if (getStatus() == GameStatus.PLAYING) {
+                while (player.getHand().size() < 10) {
+                    player.getHand().add(whiteCardDrawPile.draw());
+                }
+            } else if (getStatus() == GameStatus.WAITING) {
+                computeScoreLimit();
+            }
             players.add(player);
-            computeScoreLimit();
             broadcastThisGameState();
         }
     }

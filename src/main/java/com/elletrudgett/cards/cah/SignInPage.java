@@ -1,23 +1,17 @@
 package com.elletrudgett.cards.cah;
 
 import com.elletrudgett.cards.cah.game.GameState;
-import com.elletrudgett.cards.cah.game.GameStatus;
 import com.elletrudgett.cards.cah.game.Player;
 import com.elletrudgett.cards.cah.game.messages.AbstractGameMessage;
 import com.elletrudgett.cards.cah.game.messages.GameStateUpdateMessage;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.dependency.JavaScript;
-import com.vaadin.flow.component.dependency.StyleSheet;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.RouterLayout;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.shared.Registration;
 import lombok.extern.log4j.Log4j2;
@@ -38,7 +32,6 @@ public class SignInPage extends VerticalLayout {
         gameProgressComponent = new GameProgressComponent();
         add(gameProgressComponent);
         signInForm = new SignInForm();
-        signInForm.setVisible(GameState.getInstance().getStatus() != GameStatus.PLAYING);
         add(signInForm);
     }
 
@@ -75,11 +68,6 @@ public class SignInPage extends VerticalLayout {
             GameStateUpdateMessage gameStateUpdateMessage = (GameStateUpdateMessage) message;
             ui.access(() -> {
                 gameProgressComponent.update(gameStateUpdateMessage.getGameState());
-                if (gameStateUpdateMessage.getGameState().getStatus() == GameStatus.PLAYING) {
-                    signInForm.setVisible(false);
-                } else {
-                    signInForm.setVisible(true);
-                }
             });
         }
     }

@@ -38,14 +38,22 @@ public class SubmissionsComponent extends VerticalLayout {
         submissionsDiv.setWidthFull();
         for (Pair<Player, List<String>> submission : submissions) {
             Player player = submission.getKey();
-            PlayerSubmission playerSubmission = new PlayerSubmission(submission.getValue());
+            List<String> submissionList = submission.getValue();
+            PlayerSubmission playerSubmission = new PlayerSubmission(submissionList);
+
+            // Give czar clicking ability if winner hasn't been chosen yet
             if (roundWinner == null && iAmCzar) {
-                playerSubmission.addClickListener(e -> {
+                playerSubmission.setSubmissionCardClickedConsumer(e -> {
                     GameState.getInstance().selectAnswer(player);
                 });
-            } else if (roundWinner == player) {
+                playerSubmission.update(submissionList, submissionList.size());
+            }
+
+            if (roundWinner == player) {
+                // Rainbow winner
                 playerSubmission.addClassName("tp-winner");
             } else if (roundWinner != null) {
+                // Hide losers
                 playerSubmission.setVisible(false);
             }
             submissionsDiv.add(playerSubmission);
