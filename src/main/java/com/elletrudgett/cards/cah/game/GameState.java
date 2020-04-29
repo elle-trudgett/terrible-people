@@ -105,6 +105,12 @@ public class GameState {
         winner = null;
         cardCzar = RNG.nextInt(players.size());
 
+        computeScoreLimit();
+
+        setupDecks();
+    }
+
+    private void computeScoreLimit() {
         if (players.size() < 5) {
             scoreLimit = 8;
         } else if (players.size() < 8) {
@@ -112,8 +118,6 @@ public class GameState {
         } else {
             scoreLimit = 3;
         }
-
-        setupDecks();
     }
 
     private void startNewRound() {
@@ -143,6 +147,10 @@ public class GameState {
 
     public void remove(Player player) {
         if (players.contains(player)) {
+            if (getStatus() == GameStatus.WAITING) {
+                computeScoreLimit();
+            }
+
             players.remove(player);
             if (player.isVip()) {
                 assignNewVip();
@@ -216,6 +224,7 @@ public class GameState {
                 player.setVip(true);
             }
             players.add(player);
+            computeScoreLimit();
             broadcastThisGameState();
         }
     }
