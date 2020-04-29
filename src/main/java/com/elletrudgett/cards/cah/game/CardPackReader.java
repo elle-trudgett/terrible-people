@@ -1,0 +1,76 @@
+package com.elletrudgett.cards.cah.game;
+
+import lombok.extern.log4j.Log4j2;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Log4j2
+public class CardPackReader {
+    public static CardPack loadCardPack(String packFilename) {
+        String packName = "Unnamed pack";
+        List<Card> blackCards = new ArrayList<>();
+        List<Card> whiteCards = new ArrayList<>();
+
+        try {
+            try (InputStream resource = CardPackReader.class.getClassLoader().getResourceAsStream("static/cards/" + packFilename + ".pack")) {
+                List<String> lines =
+                        new BufferedReader(new InputStreamReader(resource,
+                                StandardCharsets.UTF_8)).lines().collect(Collectors.toList());
+                CardType currentCardType = null;
+
+                for (String line : lines) {
+                    if (line.contains("### Pack")) {
+                        line = line.replace("### Pack:", "");
+                        line = line.replace("###", "");
+                        packName = line.trim();
+                        continue;
+                    } else if (line.contains("### Black")) {
+                        currentCardType = CardType.BLACK;
+                        continue;
+                    } else if (line.contains("### White")) {
+                        currentCardType = CardType.WHITE;
+                        continue;
+                    } else if (line.contains("###")) {
+                        throw new IllegalArgumentException("Malformed line: " + line);
+                    }
+
+                    if (currentCardType == null) {
+                        throw new IllegalStateException("Expected card type to be set.");
+                    } else if (currentCardType == CardType.BLACK) {
+                        if (!line.contains("|||")) {
+                            throw new IllegalArgumentException("Black card didn't have options splitter: " + line);
+                        }
+
+                        String[] split = line.split("\\|\\|\\|");
+
+                        Card newCard = new Card(currentCardType, split[0]);
+                        if (split.length > 1) {
+                            if (split[1].contains("PICK 2")) {
+                                newCard.getEffects().add(CardSpecialEffect.PICK_2);
+                            } else if (split[1].contains("PICK 3")) {
+                                newCard.getEffects().add(CardSpecialEffect.PICK_3);
+                            } else if (split[1].contains("DRAW 2")) {
+                                newCard.getEffects().add(CardSpecialEffect.DRAW_2);
+                            }
+                        }
+                        blackCards.add(newCard);
+                    } else if (currentCardType == CardType.WHITE) {
+                        whiteCards.add(new Card(currentCardType, line));
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        log.info("Loaded " + packName + " from " + packFilename + ". " + blackCards.size() + " black cards, " + whiteCards.size() + " white cards.");
+        return new CardPack(packName, blackCards, whiteCards);
+    }
+}
