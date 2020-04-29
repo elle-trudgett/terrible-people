@@ -141,6 +141,7 @@
 }
 
 .tp-hand .tp-hand-card, .tp-submission, .tp-submission-blank {
+    max-width: 28vw;
     cursor: pointer;
 
     display: inline-block;
@@ -290,7 +291,7 @@
     margin-left: -1em;
     position: sticky;
     top: 0;
-    z-index: 900;
+    z-index: 50;
 
     /* background texture */
     background-color: #115180;
@@ -334,4 +335,19 @@
 .tp-winner-image {
     border-radius: 15%;
     width: 9em;
+}
+
+.tp-player-submission-1 {
+    width: 10em;
+    display: inline-block;
+}
+
+.tp-player-submission-2 {
+    width: 20em;
+    display: inline-block;
+}
+
+.tp-player-submission-3 {
+    width: 30em;
+    display: inline-block;
 }

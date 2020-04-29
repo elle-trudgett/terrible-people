@@ -21,6 +21,8 @@ class PlayerSubmission extends HorizontalLayout {
     public void update(List<String> submission, int spaces) {
         removeAll();
 
+        addClassName("tp-player-submission-" + spaces);
+
         setVisible(!submission.isEmpty());
 
         int i = 0;
