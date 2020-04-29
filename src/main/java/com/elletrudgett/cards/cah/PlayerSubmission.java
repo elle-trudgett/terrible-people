@@ -22,9 +22,6 @@ class PlayerSubmission extends HorizontalLayout {
         removeAll();
 
         setVisible(!submission.isEmpty());
-        if (mySubmission) {
-            getStyle().set("width", "150%");
-        }
 
         int i = 0;
         for (String cardContent : submission) {
@@ -36,31 +33,47 @@ class PlayerSubmission extends HorizontalLayout {
                 cardSpan.add(tapToRemove);
             }
             cardSpan.addClassName("tp-submission");
-            if (i > 0) {
-                cardSpan.getStyle().set("margin-left", "-0.35em");
+            cardSpan.addClassName("tp-cah-card");
+            cardSpan.addClassName("tp-white-card");
+
+            if (i > 0 && !mySubmission) {
+                cardSpan.getStyle().set("margin-left", "-2em");
             }
 
             if (spaces == 2) {
                 if (i == 0) {
                     cardSpan.getStyle().set("transform", "rotate(-3deg)");
+                    if (mySubmission) {
+                        cardSpan.getStyle().set("margin-left", "-0.5em");
+                    }
                 } else {
                     cardSpan.getStyle().set("transform", "rotate(3deg)");
+                    if (mySubmission) {
+                        cardSpan.getStyle().set("margin-left", "-9.5em");
+                    }
                 }
             } else if (spaces == 3) {
                 if (i == 0) {
                     cardSpan.getStyle().set("transform", "rotate(-5deg)");
+                    if (mySubmission) {
+                        cardSpan.getStyle().set("margin-left", "-1em");
+                    }
+                } else if (i == 1) {
+                    if (mySubmission) {
+                        cardSpan.getStyle().set("margin-left", "-9.5em");
+                    }
                 } else if (i == 2) {
                     cardSpan.getStyle().set("transform", "rotate(5deg)");
+                    if (mySubmission) {
+                        cardSpan.getStyle().set("margin-left", "-9.5em");
+                    }
                 }
             }
 
-            if (mySubmission) {
-                cardSpan.getStyle().set("margin-top", "3em");
-                cardSpan.getStyle().set("margin-bottom", "3em");
-            } else {
+            // this really should be in css but bite me
+            if (!mySubmission) {
                 cardSpan.getStyle().set("margin-bottom", "1.5em");
             }
-            cardSpan.getStyle().set("padding-bottom", "1em");
             if (submissionCardClickedConsumer != null) {
                 cardSpan.addClickListener(spanClickEvent -> submissionCardClickedConsumer.accept(cardContent));
             }

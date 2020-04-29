@@ -63,6 +63,11 @@ public class PlayersComponent extends ScrollPanel {
             vipDiv.addClassName("tp-vip-overlay");
             vipDiv.add(crown);
 
+            Div czarDiv = new Div();
+            FontAwesomeIcon bullhorn = new FontAwesomeIcon("fa-bullhorn");
+            czarDiv.addClassName("tp-czar-overlay");
+            czarDiv.add(bullhorn);
+
             Div container = new Div();
             container.addClassName("tp-player-container");
             container.add(image);
@@ -70,6 +75,9 @@ public class PlayersComponent extends ScrollPanel {
             container.add(scoreDiv);
             if (player.isVip()) {
                 container.add(vipDiv);
+            }
+            if (player == GameState.getInstance().getCardCzarPlayer()) {
+                container.add(czarDiv);
             }
 
             ContextMenu contextMenu = new ContextMenu();

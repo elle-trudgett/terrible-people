@@ -60,7 +60,7 @@ public class GamePage extends VerticalLayout {
         add(gameInfoHeading);
         add(playersComponent);
 
-        roundDisplayComponent = new RoundDisplayComponent(mySubmission);
+        roundDisplayComponent = new RoundDisplayComponent(mySubmission, this::skipCard);
         add(roundDisplayComponent);
 
         handComponent = new HandComponent(this::handSelectionChanged, mySubmission);
@@ -93,6 +93,12 @@ public class GamePage extends VerticalLayout {
 
         // Load decks if they haven't been loaded already?
         CardPackRepository.loadPacks();
+    }
+
+    private void skipCard() {
+        if (amICzar() && currentGameState.getSubmissions().isEmpty()) {
+            GameState.getInstance().skip();
+        }
     }
 
     @ClientCallable
@@ -130,7 +136,7 @@ public class GamePage extends VerticalLayout {
             ui.navigate("");
         }
 
-        updatePlayersHeader();
+        updateGameInfoHeader();
 
         if (currentGameState != null) {
             updateUI();
@@ -149,10 +155,10 @@ public class GamePage extends VerticalLayout {
             gameMenuBar.getStartGameMenuItem().setEnabled(startGameButtonEnabled);
             gameMenuBar.getEndGameMenuItem().setEnabled(player.isVip() && currentGameState.getStatus() == GameStatus.PLAYING);
 
-            updatePlayersHeader();
-            playersComponent.update(currentGameState.getPlayers());
-            roundDisplayComponent.update(currentGameState);
             boolean iAmCzar = amICzar();
+            updateGameInfoHeader();
+            playersComponent.update(currentGameState.getPlayers());
+            roundDisplayComponent.update(currentGameState, iAmCzar);
 
             nextRoundHeader.setVisible(false);
 
@@ -189,6 +195,7 @@ public class GamePage extends VerticalLayout {
                         submissionsComponent.setSubmissions(currentGameState.getSubmissions());
                         submissionsComponent.update(null, iAmCzar);
                         submissionsComponent.setVisible(true);
+
                         break;
                     case WINNING_ANSWER_PRESENTED:
                         waitingOnComponent.setVisible(false);
@@ -241,17 +248,27 @@ public class GamePage extends VerticalLayout {
                     }
                 }, 3000);
             }
+        } else if (message.getMessageType() == AbstractGameMessage.MessageType.CardSkipped) {
+            ui.access(() -> Notification.show("The card was skipped.", 1000, Notification.Position.MIDDLE));
+            handComponent.clearSelected();
         }
 
         updateUI();
     }
 
-    private void updatePlayersHeader() {
+    private void updateGameInfoHeader() {
         gameInfoHeading.removeAll();
-        gameInfoHeading.add(new FontAwesomeIcon("users"));
-        gameInfoHeading.add(new Span(String.valueOf(currentGameState.getPlayers().size())));
-        gameInfoHeading.add(new FontAwesomeIcon("trophy"));
-        gameInfoHeading.add(new Span(String.valueOf(currentGameState.getScoreLimit())));
+        FontAwesomeIcon usersIcon = new FontAwesomeIcon("fa-users");
+        usersIcon.getElement().setAttribute("title", "Players");
+        gameInfoHeading.add(usersIcon);
+        gameInfoHeading.add(new Span(" " + currentGameState.getPlayers().size()));
+        Span spacer = new Span();
+        spacer.addClassName("tp-game-info-spacer");
+        gameInfoHeading.add(spacer);
+        FontAwesomeIcon trophyIcon = new FontAwesomeIcon("fa-trophy");
+        trophyIcon.getElement().setAttribute("title", "Points needed to win");
+        gameInfoHeading.add(trophyIcon);
+        gameInfoHeading.add(new Span(" " + currentGameState.getScoreLimit()));
     }
 
     @Override

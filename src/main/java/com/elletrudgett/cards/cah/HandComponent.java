@@ -44,6 +44,12 @@ public class HandComponent extends Div {
         update();
     }
 
+    private void removeAllSelection() {
+        selected.clear();
+        selectedChanged.run();
+        update();
+    }
+
     public void update() {
         mySubmission.update(selected.stream().map(Card::getContent).collect(Collectors.toList()), cardLimit);
 
@@ -52,6 +58,8 @@ public class HandComponent extends Div {
 
             Span handCard = new Span(card.getContent());
             handCard.addClassName("tp-hand-card");
+            handCard.addClassName("tp-cah-card");
+            handCard.addClassName("tp-white-card");
             if (selected.contains(card)) {
                 handCard.addClassName("tp-hand-card-selected");
             } else {

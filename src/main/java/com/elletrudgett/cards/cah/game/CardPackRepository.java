@@ -7,14 +7,13 @@ import java.util.List;
 
 @Data
 public class CardPackRepository {
-    public static final List<CardPack> packs = new ArrayList<>();
+    public static List<CardPack> packs = new ArrayList<>();
 
     private CardPackRepository() {
     }
 
     public static void loadPacks() {
-        if (packs.isEmpty()) {
-            packs.add(CardPackReader.loadCardPack("base_game"));
-        }
+        packs = new ArrayList<>();
+        packs.add(CardPackReader.loadCardPack("base_game"));
     }
 }

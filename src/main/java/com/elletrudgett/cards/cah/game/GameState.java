@@ -32,6 +32,7 @@ public class GameState {
     private Card currentBlackCard = null;
     private List<Pair<Player, List<String>>> submissions = new ArrayList<>();
     private Player roundWinner = null;
+    private boolean skippedOnce = false;
 
     private GameState() {
         setupDecks();
@@ -102,6 +103,7 @@ public class GameState {
     }
 
     private void startNewRound() {
+        skippedOnce = false;
         Broadcaster.broadcast(new WaitingOnMessage(getWaitingOnNames()));
         drawWhiteCards();
     }
@@ -246,7 +248,7 @@ public class GameState {
             // Else ready to proceed.
             playPhase = PlayPhase.DELIBERATING;
             playTimestamp = Instant.now();
-            Collections.shuffle(submissions);
+            Collections.shuffle(submissions); // make sure we can't tell whose is whose.
             broadcastThisGameState();
         }
     }
@@ -373,6 +375,14 @@ public class GameState {
             giver.setVip(false);
             taker.setVip(true);
             broadcastThisGameState();
+        }
+    }
+
+    public void skip() {
+        if (!skippedOnce) {
+            skippedOnce = true;
+            Broadcaster.broadcast(new CardSkippedMessage());
+            drawBlackCard();
         }
     }
 }

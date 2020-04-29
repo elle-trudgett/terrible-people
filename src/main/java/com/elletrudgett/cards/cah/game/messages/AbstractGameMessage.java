@@ -4,6 +4,7 @@ public abstract class AbstractGameMessage {
     public enum MessageType {
         GameStateUpdate,
         PlayerKicked,
+        CardSkipped,
         WaitingOn
     }
 

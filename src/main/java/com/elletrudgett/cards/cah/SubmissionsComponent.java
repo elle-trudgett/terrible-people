@@ -8,7 +8,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import lombok.Data;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.*;
+import java.util.List;
 
 @Data
 public class SubmissionsComponent extends VerticalLayout {
@@ -25,7 +25,8 @@ public class SubmissionsComponent extends VerticalLayout {
 
         removeAll();
 
-        String headerText = iAmCzar ? "Choose the winner:" : "Czar is choosing...";
+        String czarName = GameState.getInstance().getCzarName();
+        String headerText = iAmCzar ? "Choose the winner:" : czarName + " is choosing...";
         if (roundWinner != null) {
             headerText = roundWinner.getName() + " wins the round!";
         }
@@ -44,6 +45,8 @@ public class SubmissionsComponent extends VerticalLayout {
                 });
             } else if (roundWinner == player) {
                 playerSubmission.addClassName("tp-winner");
+            } else if (roundWinner != null) {
+                playerSubmission.setVisible(false);
             }
             submissionsDiv.add(playerSubmission);
         }
