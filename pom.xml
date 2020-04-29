@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.elletrudgett.cards</groupId>
     <artifactId>terrible-people</artifactId>
-    <version>0.5-SNAPSHOT</version>
+    <version>0.6-SNAPSHOT</version>
     <name>Terrible People</name>
     <description>Cards Against Humanity Clone</description>
 

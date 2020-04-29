@@ -1,6 +1,7 @@
 package com.elletrudgett.cards.cah.game;
 
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 @Log4j2
 public class CardPackReader {
     public static CardPack loadCardPack(String packFilename) {
+        log.info("Loading " + packFilename);
         String packName = "Unnamed pack";
         List<Card> blackCards = new ArrayList<>();
         List<Card> whiteCards = new ArrayList<>();
@@ -61,6 +63,21 @@ public class CardPackReader {
                                 newCard.getEffects().add(CardSpecialEffect.DRAW_2);
                             }
                         }
+
+                        // Double check the right number of picks
+                        int numSpaces = StringUtils.countMatches(cardContent.replaceAll("_+", "_"), "_");
+                        if (numSpaces == 2) {
+                            if (!newCard.getEffects().contains(CardSpecialEffect.PICK_2)) {
+                                throw new IllegalArgumentException("Expected PICK 2 for card: " + newCard.getContent());
+                            }
+                        } else if (numSpaces == 3) {
+                            if (!newCard.getEffects().contains(CardSpecialEffect.PICK_3)) {
+                                throw new IllegalArgumentException("Expected PICK 3 for card: " + newCard.getContent());
+                            }
+                        } else if (numSpaces > 3) {
+                            throw new IllegalArgumentException("Too many spaces (" + numSpaces + ") for card: " + newCard.getContent());
+                        }
+
                         blackCards.add(newCard);
                     } else if (currentCardType == CardType.WHITE) {
                         whiteCards.add(new Card(currentCardType, line));

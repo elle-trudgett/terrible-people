@@ -18,7 +18,6 @@ import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.router.PreserveOnRefresh;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.shared.Registration;
@@ -34,7 +33,7 @@ import java.util.stream.Collectors;
 @StyleSheet("./my-styles/game.css")
 @JavaScript("./js/game.js")
 @Log4j2
-@PreserveOnRefresh
+//@PreserveOnRefresh
 public class GamePage extends VerticalLayout {
     private final PlayersComponent playersComponent;
     private final RoundDisplayComponent roundDisplayComponent;
