@@ -2,6 +2,7 @@ package com.elletrudgett.cards.cah.game;
 
 import com.elletrudgett.cards.cah.Broadcaster;
 import com.elletrudgett.cards.cah.game.messages.GameStateUpdateMessage;
+import com.elletrudgett.cards.cah.game.messages.ResetGameMessage;
 import com.vaadin.flow.server.VaadinSession;
 import lombok.Data;
 import org.apache.commons.lang3.tuple.Pair;
@@ -31,7 +32,7 @@ public class GameState {
     private Deck winningCards = new Deck();
 
     private Card currentBlackCard = null;
-    private List<Pair<Player, List<String>>> submissions = new ArrayList<>();
+    private List<Pair<Player, List<Card>>> submissions = new ArrayList<>();
     private Player roundWinner = null;
     private boolean skippedOnce = false;
     private Player winner = null;
@@ -86,6 +87,7 @@ public class GameState {
     public void startGame() {
         endGame();
         prepareForNewGame();
+        Broadcaster.broadcast(new ResetGameMessage());
         status = GameStatus.PLAYING;
         startedAt = Instant.now();
         playTimestamp = Instant.now();
@@ -156,9 +158,9 @@ public class GameState {
                 assignNewVip();
             }
 
-            Iterator<Pair<Player, List<String>>> iterator = submissions.iterator();
+            Iterator<Pair<Player, List<Card>>> iterator = submissions.iterator();
             while (iterator.hasNext()) {
-                Pair<Player, List<String>> submission = iterator.next();
+                Pair<Player, List<Card>> submission = iterator.next();
                 Player submissionPlayer = submission.getKey();
                 // Remove submissions from this player who left
 //                if (submissionPlayer.equals(player)) {
@@ -169,9 +171,9 @@ public class GameState {
 
                 // Return cards that were submitted by the new Czar to their hand
                 if (submissionPlayer.equals(getCardCzarPlayer())) {
-                    for (String whiteCardContent : submission.getValue()) {
+                    for (Card card : submission.getValue()) {
                         if (player.getHand().size() < 10) {
-                            player.getHand().add(new Card(CardType.WHITE, whiteCardContent));
+                            player.getHand().add(card);
                         }
                     }
                 }
@@ -248,13 +250,13 @@ public class GameState {
         return 1;
     }
 
-    public void submit(Player player, List<String> submission) {
+    public void submit(Player player, List<Card> submission) {
         if (playerHasSubmitted(player)) {
             return;
         }
 
-        submissions.add(Pair.of(player, submission));
-        player.getHand().removeIf(c -> submission.contains(c.getContent()));
+        submissions.add(Pair.of(player, new ArrayList<>(submission)));
+        player.getHand().removeIf(submission::contains);
 
         // If we are still waiting on more submissions...
         checkIfMoreSubmissionsNeeded();

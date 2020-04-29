@@ -5,6 +5,7 @@ public abstract class AbstractGameMessage {
         GameStateUpdate,
         PlayerKicked,
         CardSkipped,
+        ResetGame,
         WaitingOn
     }
 

@@ -28,6 +28,11 @@ public class CardPackReader {
                 CardType currentCardType = null;
 
                 for (String line : lines) {
+                    if (line.startsWith("***VETO***")) {
+                        log.warn("Skipping vetoed card: " + line);
+                        continue;
+                    }
+
                     if (line.contains("### Pack")) {
                         line = line.replace("### Pack:", "");
                         line = line.replace("###", "");
@@ -54,6 +59,11 @@ public class CardPackReader {
 
                         String cardContent = split[0];
                         Card newCard = new Card(currentCardType, cardContent);
+
+                        if (cardContent.startsWith("img")) {
+                            newCard.setImage(true);
+                        }
+
                         if (split.length > 1) {
                             if (split[1].contains("PICK 2")) {
                                 newCard.getEffects().add(CardSpecialEffect.PICK_2);

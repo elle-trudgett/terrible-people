@@ -13,21 +13,46 @@ import java.util.stream.Collectors;
 @Log4j2
 public class CardPackRepository {
     public static List<CardPack> packs = new ArrayList<>();
+    private static boolean loaded = false;
 
     private CardPackRepository() {
     }
 
-    public static void loadPacks() {
+    public synchronized static void loadPacks() {
+        if (loaded) {
+            log.warn("Packs already loaded, skipping load request");
+            return;
+        }
+
+        log.info("Loading all packs...");
+
         packs = new ArrayList<>();
         packs.add(CardPackReader.loadCardPack("base_game"));
         packs.add(CardPackReader.loadCardPack("absurd_box"));
         packs.add(CardPackReader.loadCardPack("red_box"));
+        packs.add(CardPackReader.loadCardPack("green_box"));
+        packs.add(CardPackReader.loadCardPack("blue_box"));
 
-        checkPacks();
+        packs.add(CardPackReader.loadCardPack("expansion_2000s_nostalgia_pack"));
+        packs.add(CardPackReader.loadCardPack("expansion_ai_pack"));
+        packs.add(CardPackReader.loadCardPack("expansion_ass_pack"));
+        packs.add(CardPackReader.loadCardPack("expansion_college_pack"));
+        packs.add(CardPackReader.loadCardPack("expansion_hidden_gems_bundle"));
+        packs.add(CardPackReader.loadCardPack("expansion_human_pack"));
+        packs.add(CardPackReader.loadCardPack("expansion_period_pack"));
+        packs.add(CardPackReader.loadCardPack("expansion_pride_pack"));
+        packs.add(CardPackReader.loadCardPack("expansion_reject_pack_3"));
+        packs.add(CardPackReader.loadCardPack("expansion_scifi_pack"));
+        packs.add(CardPackReader.loadCardPack("expansion_theatre_pack"));
+        packs.add(CardPackReader.loadCardPack("expansion_weed_pack"));
+
+        //checkPacks();
         logPackInfo();
+
+        loaded = true;
     }
 
-    private static void checkPacks() {
+    private synchronized static void checkPacks() {
         List<Card> blackCards = packs.stream().flatMap(p -> p.getBlackCards().stream()).collect(Collectors.toList());
         List<Card> whiteCards = packs.stream().flatMap(p -> p.getWhiteCards().stream()).collect(Collectors.toList());
 
@@ -35,7 +60,7 @@ public class CardPackRepository {
         findDuplicates(whiteCards);
     }
 
-    private static void findDuplicates(List<Card> cards) {
+    private synchronized static void findDuplicates(List<Card> cards) {
         for (int i = 0; i < cards.size(); i++) {
             Card card = cards.get(i);
             for (int j = i + 1; j < cards.size(); j++) {

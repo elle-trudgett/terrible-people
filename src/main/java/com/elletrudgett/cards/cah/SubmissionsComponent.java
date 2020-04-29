@@ -1,5 +1,6 @@
 package com.elletrudgett.cards.cah;
 
+import com.elletrudgett.cards.cah.game.Card;
 import com.elletrudgett.cards.cah.game.GameState;
 import com.elletrudgett.cards.cah.game.Player;
 import com.vaadin.flow.component.html.Div;
@@ -12,7 +13,7 @@ import java.util.List;
 
 @Data
 public class SubmissionsComponent extends VerticalLayout {
-    private List<Pair<Player, List<String>>> submissions = null;
+    private List<Pair<Player, List<Card>>> submissions = null;
     private H3 winnerHeader;
 
     public SubmissionsComponent() {
@@ -36,9 +37,9 @@ public class SubmissionsComponent extends VerticalLayout {
 
         Div submissionsDiv = new Div();
         submissionsDiv.setWidthFull();
-        for (Pair<Player, List<String>> submission : submissions) {
+        for (Pair<Player, List<Card>> submission : submissions) {
             Player player = submission.getKey();
-            List<String> submissionList = submission.getValue();
+            List<Card> submissionList = submission.getValue();
             PlayerSubmission playerSubmission = new PlayerSubmission(submissionList);
 
             // Give czar clicking ability if winner hasn't been chosen yet

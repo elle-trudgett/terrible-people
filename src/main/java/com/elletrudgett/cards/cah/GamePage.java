@@ -25,8 +25,10 @@ import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 
 import java.time.Instant;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.Timer;
+import java.util.TimerTask;
 
 @Route(value = "game", layout = MainLayout.class)
 @PageTitle("Terrible People")
@@ -69,8 +71,7 @@ public class GamePage extends VerticalLayout {
         submitButton = new Button("Submit");
         submitButton.setWidthFull();
         submitButton.addClickListener(buttonClickEvent -> {
-            List<Card> selectedCards = handComponent.getSelected();
-            GameState.getInstance().submit(player, selectedCards.stream().map(Card::getContent).collect(Collectors.toList()));
+            GameState.getInstance().submit(player, handComponent.getSelected());
             handComponent.clearSelected();
         });
         submitButton.setVisible(false);
@@ -250,6 +251,8 @@ public class GamePage extends VerticalLayout {
             }
         } else if (message.getMessageType() == AbstractGameMessage.MessageType.CardSkipped) {
             ui.access(() -> Notification.show("The card was skipped.", 1000, Notification.Position.MIDDLE));
+            handComponent.clearSelected();
+        } else if (message.getMessageType() == AbstractGameMessage.MessageType.ResetGame) {
             handComponent.clearSelected();
         }
 

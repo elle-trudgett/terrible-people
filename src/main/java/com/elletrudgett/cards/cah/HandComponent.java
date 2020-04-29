@@ -2,13 +2,13 @@ package com.elletrudgett.cards.cah;
 
 import com.elletrudgett.cards.cah.game.Card;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class HandComponent extends Div {
     private final Runnable selectedChanged;
@@ -38,8 +38,8 @@ public class HandComponent extends Div {
         add(handDiv);
     }
 
-    private void submissionCardClicked(String cardContent) {
-        selected.removeIf(card -> card.getContent().equals(cardContent));
+    private void submissionCardClicked(Card cardCliened) {
+        selected.removeIf(card -> card.equals(cardCliened));
         selectedChanged.run();
         update();
     }
@@ -51,12 +51,16 @@ public class HandComponent extends Div {
     }
 
     public void update() {
-        mySubmission.update(selected.stream().map(Card::getContent).collect(Collectors.toList()), cardLimit);
+        mySubmission.update(selected, cardLimit);
 
         handDiv.removeAll();
         for (Card card : hand) {
-
-            Span handCard = new Span(card.getContent());
+            Span handCard = new Span(card.isImage() ? "" : card.getContent());
+            if (card.isImage()) {
+                Image image = new Image("/frontend/" + card.getContent(), card.getContent());
+                image.addClassName("tp-white-card-image");
+                handCard.add(image);
+            }
             handCard.addClassName("tp-hand-card");
             handCard.addClassName("tp-cah-card");
             handCard.addClassName("tp-white-card");

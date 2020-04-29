@@ -1,6 +1,8 @@
 package com.elletrudgett.cards.cah;
 
+import com.elletrudgett.cards.cah.game.Card;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import lombok.Setter;
@@ -10,15 +12,15 @@ import java.util.function.Consumer;
 
 class PlayerSubmission extends HorizontalLayout {
     @Setter
-    private Consumer<String> submissionCardClickedConsumer;
+    private Consumer<Card> submissionCardClickedConsumer;
     @Setter
     private boolean mySubmission;
 
-    public PlayerSubmission(List<String> submission) {
+    public PlayerSubmission(List<Card> submission) {
         update(submission, submission.size());
     }
 
-    public void update(List<String> submission, int spaces) {
+    public void update(List<Card> submission, int spaces) {
         removeAll();
 
         addClassName("tp-player-submission-" + spaces);
@@ -26,8 +28,13 @@ class PlayerSubmission extends HorizontalLayout {
         setVisible(!submission.isEmpty());
 
         int i = 0;
-        for (String cardContent : submission) {
-            Span cardSpan = new Span(cardContent);
+        for (Card card : submission) {
+            Span cardSpan = new Span(card.isImage() ? "" : card.getContent());
+            if (card.isImage()) {
+                Image image = new Image("/frontend/" + card.getContent(), card.getContent());
+                image.addClassName("tp-white-card-image");
+                cardSpan.add(image);
+            }
             if (mySubmission) {
                 Div tapToRemove = new Div();
                 tapToRemove.setText("(tap to remove)");
@@ -77,7 +84,7 @@ class PlayerSubmission extends HorizontalLayout {
                 cardSpan.getStyle().set("margin-bottom", "1.5em");
             }
             if (submissionCardClickedConsumer != null) {
-                cardSpan.addClickListener(spanClickEvent -> submissionCardClickedConsumer.accept(cardContent));
+                cardSpan.addClickListener(spanClickEvent -> submissionCardClickedConsumer.accept(card));
             }
             add(cardSpan);
             i++;

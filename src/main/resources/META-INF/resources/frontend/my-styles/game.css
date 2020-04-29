@@ -351,3 +351,8 @@
     width: 30em;
     display: inline-block;
 }
+
+.tp-white-card-image {
+    width: 100%;
+    border-radius: 5%;
+}
