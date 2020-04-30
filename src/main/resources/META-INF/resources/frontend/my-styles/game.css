@@ -156,7 +156,7 @@
 }
 
 .tp-hand .tp-hand-card, .tp-submission, .tp-submission-blank {
-    max-width: 28vw;
+    max-width: 50vw;
     cursor: pointer;
 
     display: inline-block;
