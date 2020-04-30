@@ -18,12 +18,10 @@ public class ScrollPanel extends HorizontalLayout {
     }
 
     private void preparePanel() {
-        getStyle().set("overflow", "auto");
         content = new HorizontalLayout();
         content.setWidth(null);
         content.setHeight("100%");
         super.add(content);
-        setWidth("100%");
     }
 
     public HorizontalLayout getContent(){

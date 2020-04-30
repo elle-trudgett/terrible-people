@@ -13,6 +13,7 @@ public class Player {
     private final String name;
     private final String emailHash;
     private final UUID uuid;
+    private UUID room;
     private int score = 0;
     private final List<Card> hand = new ArrayList<>();
     private boolean vip;

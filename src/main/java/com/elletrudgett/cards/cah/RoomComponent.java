@@ -10,12 +10,16 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class GameProgressComponent extends Div {
+public class RoomComponent extends Div {
     private final Div playersListText;
     private final Div gameStatusText;
+    private final H5 header;
 
-    public GameProgressComponent() {
-        add(new H5("Current game"));
+    public RoomComponent() {
+        addClassName("tp-room");
+
+        header = new H5();
+        add(header);
 
         playersListText = new Div();
         add(playersListText);
@@ -26,6 +30,8 @@ public class GameProgressComponent extends Div {
     }
 
     public void update(GameState gameState) {
+        header.setText(gameState.getName());
+
         List<Player> players = gameState.getPlayers();
         if (players.isEmpty()) {
             playersListText.setText("No players yet");

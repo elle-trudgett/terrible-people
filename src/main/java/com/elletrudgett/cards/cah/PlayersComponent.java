@@ -20,7 +20,7 @@ public class PlayersComponent extends ScrollPanel {
     public static final String GRAVATAR_URL = "https://www.gravatar.com/avatar/";
 
     public PlayersComponent() {
-        getStyle().set("overflow", "hidden");
+        addClassName("tp-players-component");
         update(GameState.getInstance().getPlayers());
     }
 

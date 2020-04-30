@@ -7,7 +7,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.html.H3;
+import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.server.VaadinService;
@@ -21,10 +21,10 @@ public class SignInForm extends FormLayout {
     public static final String TERRIBLE_PEOPLE_NAME = "terrible-people-name";
     public static final String TERRIBLE_PEOPLE_EMAIL = "terrible-people-email";
 
-    public SignInForm() {
-        setResponsiveSteps(new ResponsiveStep("0em", 1));
-        add(new H3("Join the game:"));
+    public SignInForm(Runnable onJoinRunnable) {
+        add(new H1("Who are you?"));
 
+        setResponsiveSteps(new ResponsiveStep("0em", 1));
         TextField nameField = new TextField("Name");
         nameField.setRequired(true);
         nameField.setRequiredIndicatorVisible(true);
@@ -66,6 +66,8 @@ public class SignInForm extends FormLayout {
             }
 
             getUI().ifPresent(ui -> {
+                onJoinRunnable.run();
+
                 Player player = new Player(
                         playerName,
                         MD5Helper.md5Hex(email),

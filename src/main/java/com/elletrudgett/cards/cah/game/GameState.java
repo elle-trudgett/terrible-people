@@ -5,6 +5,7 @@ import com.elletrudgett.cards.cah.game.messages.GameStateUpdateMessage;
 import com.elletrudgett.cards.cah.game.messages.ResetGameMessage;
 import com.vaadin.flow.server.VaadinSession;
 import lombok.Data;
+import lombok.Getter;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.time.Instant;
@@ -14,8 +15,19 @@ import java.util.stream.Collectors;
 @Data
 public class GameState {
     private static final Random RNG = new Random();
+
+    @Getter
+    private static final Map<UUID, GameState> gameStateInstances = new HashMap<>();
+
+    @Deprecated
     private static GameState instance = new GameState();
 
+    static {
+        gameStateInstances.put(instance.getUuid(), instance);
+    }
+
+    private String name = "Unnamed room";
+    private final UUID uuid;
     private List<Player> players = new ArrayList<>();
     private int cardCzar = 0;
 
@@ -38,12 +50,21 @@ public class GameState {
     private Player winner = null;
 
     private GameState() {
+        uuid = UUID.randomUUID();
         setupDecks();
         PlayerActivityChecker.monitor(this);
     }
 
+    /**
+     * Deprecated now that there are multiple rooms. Instead get by UUID.
+     */
+    @Deprecated
     public static GameState getInstance() {
-        return instance;
+        return getInstance(instance.getUuid()).orElseThrow(IllegalStateException::new);
+    }
+
+    public static Optional<GameState> getInstance(UUID uuid) {
+        return Optional.ofNullable(gameStateInstances.get(uuid));
     }
 
     public static Player getCurrentPlayer() {

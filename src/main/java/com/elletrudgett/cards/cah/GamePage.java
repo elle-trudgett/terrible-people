@@ -13,7 +13,6 @@ import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.dependency.JavaScript;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.html.H5;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -44,8 +43,8 @@ public class GamePage extends VerticalLayout {
     private final GameMenuBar gameMenuBar;
     private final WaitingOnComponent waitingOnComponent;
     private final Button submitButton;
-    private final H5 gameInfoHeading;
     private final H5 nextRoundHeader;
+    private final GameInfoHeadingComponent gameInfoHeadingComponent = new GameInfoHeadingComponent();
     Registration broadcasterRegistration;
     private Player player;
     private GameState currentGameState;
@@ -57,8 +56,7 @@ public class GamePage extends VerticalLayout {
         gameMenuBar = new GameMenuBar();
         add(gameMenuBar);
         playersComponent = new PlayersComponent();
-        gameInfoHeading = new H5("");
-        add(gameInfoHeading);
+        add(gameInfoHeadingComponent);
         add(playersComponent);
 
         roundDisplayComponent = new RoundDisplayComponent(mySubmission, this::skipCard);
@@ -136,7 +134,7 @@ public class GamePage extends VerticalLayout {
             ui.navigate("");
         }
 
-        updateGameInfoHeader();
+        gameInfoHeadingComponent.update(currentGameState);
 
         if (currentGameState != null) {
             updateUI();
@@ -159,7 +157,7 @@ public class GamePage extends VerticalLayout {
             roundDisplayComponent.setVisible(gameStatus == GameStatus.PLAYING || gameStatus == GameStatus.GAME_OVER);
 
             boolean iAmCzar = amICzar();
-            updateGameInfoHeader();
+            gameInfoHeadingComponent.update(currentGameState);
             playersComponent.update(currentGameState.getPlayers());
             roundDisplayComponent.update(currentGameState, iAmCzar);
 
@@ -259,21 +257,6 @@ public class GamePage extends VerticalLayout {
         updateUI();
     }
 
-    private void updateGameInfoHeader() {
-        gameInfoHeading.removeAll();
-        FontAwesomeIcon usersIcon = new FontAwesomeIcon("fa-users");
-        usersIcon.getElement().setAttribute("title", "Players");
-        gameInfoHeading.add(usersIcon);
-        gameInfoHeading.add(new Span(" " + currentGameState.getPlayers().size()));
-        Span spacer = new Span();
-        spacer.addClassName("tp-game-info-spacer");
-        gameInfoHeading.add(spacer);
-        FontAwesomeIcon trophyIcon = new FontAwesomeIcon("fa-trophy");
-        trophyIcon.getElement().setAttribute("title", "Points needed to win");
-        gameInfoHeading.add(trophyIcon);
-        gameInfoHeading.add(new Span(" " + currentGameState.getScoreLimit()));
-    }
-
     @Override
     protected void onDetach(DetachEvent detachEvent) {
         removeBroadcasterRegistration();
@@ -298,7 +281,7 @@ public class GamePage extends VerticalLayout {
                 GameState.getInstance().endGame();
             });
 
-            addItem("Leave game", e -> {
+            addItem("Leave room", e -> {
                 if (player != null) {
                     GameState.getInstance().remove(player);
                     GlobalHelper.savePlayer(null);
