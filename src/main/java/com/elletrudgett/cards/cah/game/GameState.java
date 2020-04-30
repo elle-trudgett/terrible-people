@@ -104,7 +104,11 @@ public class GameState {
         currentBlackCard = null;
         roundWinner = null;
         winner = null;
-        cardCzar = RNG.nextInt(players.size());
+        if (players.isEmpty()) {
+            cardCzar = 0;
+        } else {
+            cardCzar = RNG.nextInt(players.size());
+        }
         round = 1;
 
         computeScoreLimit();
@@ -170,7 +174,7 @@ public class GameState {
                 // leave it in for now.
 
                 // Return cards that were submitted by the new Czar to their hand
-                if (submissionPlayer.equals(getCardCzarPlayer())) {
+                if (getCardCzarPlayer().isPresent() && submissionPlayer.equals(getCardCzarPlayer().get())) {
                     for (Card card : submission.getValue()) {
                         if (player.getHand().size() < 10) {
                             player.getHand().add(card);
@@ -205,7 +209,7 @@ public class GameState {
     }
 
     public String getCzarName() {
-        return getCardCzarPlayer().getName();
+        return getCardCzarPlayer().map(Player::getName).orElse("");
     }
 
     private void validateCardCzar() {
@@ -289,9 +293,13 @@ public class GameState {
 
     private List<String> getWaitingOnNames() {
         return players.stream()
-                .filter(p -> !playerHasSubmitted(p) && p != getCardCzarPlayer())
+                .filter(p -> !playerHasSubmitted(p) && !isCzar(p))
                 .map(Player::getName)
                 .collect(Collectors.toList());
+    }
+
+    public boolean isCzar(Player p) {
+        return !getCardCzarPlayer().isPresent() || p.equals(getCardCzarPlayer().get());
     }
 
     public boolean playerHasSubmitted(Player player) {
@@ -338,9 +346,12 @@ public class GameState {
         startNewRound();
     }
 
-    public Player getCardCzarPlayer() {
+    public Optional<Player> getCardCzarPlayer() {
         validateCardCzar();
-        return players.get(cardCzar);
+        if (players.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(players.get(cardCzar));
     }
 
     public Optional<Player> validatePlayer(Player player) {

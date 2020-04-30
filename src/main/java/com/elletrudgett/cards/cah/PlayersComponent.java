@@ -77,7 +77,7 @@ public class PlayersComponent extends ScrollPanel {
             if (player.isVip()) {
                 container.add(vipDiv);
             }
-            if (player == GameState.getInstance().getCardCzarPlayer() && GameState.getInstance().getStatus() != GameStatus.WAITING) {
+            if (GameState.getInstance().isCzar(player) && GameState.getInstance().getStatus() != GameStatus.WAITING) {
                 container.add(czarDiv);
             }
 

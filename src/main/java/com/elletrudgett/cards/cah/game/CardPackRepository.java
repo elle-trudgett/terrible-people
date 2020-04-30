@@ -48,7 +48,7 @@ public class CardPackRepository {
         packs.add(CardPackReader.loadCardPack("expansion_reject_pack_3"));
         packs.add(CardPackReader.loadCardPack("expansion_scifi_pack"));
         packs.add(CardPackReader.loadCardPack("expansion_theatre_pack"));
-        packs.add(CardPackReader.loadCardPack("expansion_trans_pack"));
+        packs.add(CardPackReader.loadCardPack("expansion_transgender_pack"));
         packs.add(CardPackReader.loadCardPack("expansion_weed_pack"));
         packs.add(CardPackReader.loadCardPack("expansion_world_wide_web_pack"));
 

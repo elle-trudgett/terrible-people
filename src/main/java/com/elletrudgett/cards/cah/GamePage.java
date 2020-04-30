@@ -220,7 +220,7 @@ public class GamePage extends VerticalLayout {
     }
 
     private boolean amICzar() {
-        return currentGameState.getCardCzarPlayer() == player;
+        return currentGameState.isCzar(player);
     }
 
     private void handleMessage(UI ui, AbstractGameMessage message) {
@@ -301,6 +301,7 @@ public class GamePage extends VerticalLayout {
             addItem("Leave game", e -> {
                 if (player != null) {
                     GameState.getInstance().remove(player);
+                    GlobalHelper.savePlayer(null);
                 }
                 getUI().ifPresent(ui -> ui.navigate(""));
             });

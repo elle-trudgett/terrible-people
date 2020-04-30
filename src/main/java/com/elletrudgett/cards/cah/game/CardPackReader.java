@@ -21,7 +21,12 @@ public class CardPackReader {
         List<Card> whiteCards = new ArrayList<>();
 
         try {
-            try (InputStream resource = CardPackReader.class.getClassLoader().getResourceAsStream("static/cards/" + packFilename + ".pack")) {
+            String packPath = "static/cards/" + packFilename + ".pack";
+            try (InputStream resource = CardPackReader.class.getClassLoader().getResourceAsStream(packPath)) {
+                if (resource == null) {
+                    throw new IllegalStateException("Unable to find " + packPath);
+                }
+
                 List<String> lines =
                         new BufferedReader(new InputStreamReader(resource,
                                 StandardCharsets.UTF_8)).lines().collect(Collectors.toList());
