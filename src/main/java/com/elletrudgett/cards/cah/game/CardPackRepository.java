@@ -37,14 +37,20 @@ public class CardPackRepository {
         packs.add(CardPackReader.loadCardPack("expansion_ai_pack"));
         packs.add(CardPackReader.loadCardPack("expansion_ass_pack"));
         packs.add(CardPackReader.loadCardPack("expansion_college_pack"));
+        packs.add(CardPackReader.loadCardPack("expansion_covid19_pack"));
+        packs.add(CardPackReader.loadCardPack("expansion_fantasy_pack"));
+        packs.add(CardPackReader.loadCardPack("expansion_geek_pack"));
         packs.add(CardPackReader.loadCardPack("expansion_hidden_gems_bundle"));
         packs.add(CardPackReader.loadCardPack("expansion_human_pack"));
+        packs.add(CardPackReader.loadCardPack("expansion_jew_pack"));
         packs.add(CardPackReader.loadCardPack("expansion_period_pack"));
         packs.add(CardPackReader.loadCardPack("expansion_pride_pack"));
         packs.add(CardPackReader.loadCardPack("expansion_reject_pack_3"));
         packs.add(CardPackReader.loadCardPack("expansion_scifi_pack"));
         packs.add(CardPackReader.loadCardPack("expansion_theatre_pack"));
+        packs.add(CardPackReader.loadCardPack("expansion_trans_pack"));
         packs.add(CardPackReader.loadCardPack("expansion_weed_pack"));
+        packs.add(CardPackReader.loadCardPack("expansion_world_wide_web_pack"));
 
         //checkPacks();
         logPackInfo();
