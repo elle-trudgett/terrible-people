@@ -1,6 +1,7 @@
 package com.elletrudgett.cards.cah;
 
 import com.elletrudgett.cards.cah.game.Card;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
@@ -37,13 +38,21 @@ class PlayerSubmission extends HorizontalLayout {
             }
             if (mySubmission) {
                 Div tapToRemove = new Div();
-                tapToRemove.setText("(tap to remove)");
                 tapToRemove.addClassName("tp-tap-to-remove");
+                tapToRemove.add(new FontAwesomeIcon("fa-trash-alt"));
                 cardSpan.add(tapToRemove);
             }
             cardSpan.addClassName("tp-submission");
             cardSpan.addClassName("tp-cah-card");
             cardSpan.addClassName("tp-white-card");
+
+            Div packDiv = new Div();
+            packDiv.addClassName("tp-card-overlay-pack");
+            Image cardsImage = new Image("/frontend/img/cards.png", "Terrible People");
+            cardsImage.setClassName("tp-card-cards-icon");
+            packDiv.add(cardsImage);
+            packDiv.add(new Text(card.getPack()));
+            cardSpan.add(packDiv);
 
             if (i > 0 && !mySubmission) {
                 cardSpan.getStyle().set("margin-left", "-2em");

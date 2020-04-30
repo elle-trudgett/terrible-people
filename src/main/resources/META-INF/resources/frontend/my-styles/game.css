@@ -97,6 +97,21 @@
     text-align: right;
 }
 
+.tp-card-cards-icon {
+    width: 2em;
+    margin-right: 0.35em;
+    vertical-align: middle;
+}
+
+.tp-card-overlay-pack {
+    font-size: 0.6em;
+    position: absolute;
+    width: 100%;
+    bottom: 0.75em;
+    left: 0.75em;
+    text-align: left;
+}
+
 .tp-white-card {
     border: 1px solid #333;
     background: linear-gradient(175deg, rgba(255, 255, 255,1) 0%, rgba(203,203,203,1) 100%)
@@ -274,9 +289,9 @@
 .tp-tap-to-remove {
     font-style: italic;
     font-size: small;
-    text-align: center;
+    text-align: right;
     position: absolute;
-    bottom: 0;
+    bottom: 0.5em;
     width: 87%;
     color: #777777;
 }

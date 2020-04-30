@@ -5,6 +5,7 @@ import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -123,16 +124,21 @@ public class RoundDisplayComponent extends HorizontalLayout {
     private class BlackCardDisplayComponent extends Div {
         private final Text cardContentText;
         private final Div specialEffectOverlayDiv;
+        private final Div packDiv;
 
         public BlackCardDisplayComponent() {
             addClassNames("tp-black-card", "tp-cah-card");
             cardContentText = new Text("");
             add(cardContentText);
             setVisible(false);
+
             specialEffectOverlayDiv = new Div();
             specialEffectOverlayDiv.addClassName("tp-card-overlay-special-effects");
-            specialEffectOverlayDiv.setText("");
             add(specialEffectOverlayDiv);
+
+            packDiv = new Div();
+            packDiv.addClassName("tp-card-overlay-pack");
+            add(packDiv);
         }
 
         public void update(Card card) {
@@ -151,6 +157,13 @@ public class RoundDisplayComponent extends HorizontalLayout {
                     numberSpan.addClassName("tp-pick-number");
                     specialEffectOverlayDiv.add(numberSpan);
                 }
+
+                packDiv.removeAll();
+                Image cardsImage = new Image("/frontend/img/cards-inv.png", "Terrible People");
+                cardsImage.setClassName("tp-card-cards-icon");
+                packDiv.add(cardsImage);
+                packDiv.add(new Text(card.getPack()));
+
                 cardContentText.setText(cardContent);
             }
         }

@@ -1,6 +1,7 @@
 package com.elletrudgett.cards.cah;
 
 import com.elletrudgett.cards.cah.game.Card;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
@@ -64,6 +65,15 @@ public class HandComponent extends Div {
             handCard.addClassName("tp-hand-card");
             handCard.addClassName("tp-cah-card");
             handCard.addClassName("tp-white-card");
+
+            Div packDiv = new Div();
+            packDiv.addClassName("tp-card-overlay-pack");
+            Image cardsImage = new Image("/frontend/img/cards.png", "Terrible People");
+            cardsImage.setClassName("tp-card-cards-icon");
+            packDiv.add(cardsImage);
+            packDiv.add(new Text(card.getPack()));
+            handCard.add(packDiv);
+
             if (selected.contains(card)) {
                 handCard.addClassName("tp-hand-card-selected");
             } else {

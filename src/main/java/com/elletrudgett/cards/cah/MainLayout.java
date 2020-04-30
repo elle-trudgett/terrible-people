@@ -1,7 +1,6 @@
 package com.elletrudgett.cards.cah;
 
 import com.vaadin.flow.component.AttachEvent;
-import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.JavaScript;
 import com.vaadin.flow.component.dependency.StyleSheet;
@@ -31,7 +30,7 @@ public class MainLayout extends Div implements RouterLayout, PageConfigurator {
         s.addMetaTag("og:type", "website");
         s.addMetaTag("og:url", "http://terriblepeople.cards/");
         s.addLink("shortcut icon", "frontend/icons/favicon.ico");
-        s.addFavIcon("icon", "frontend/icons/favicon.ico", "64x64");
+        s.addFavIcon("icon", "frontend/icons/favicon.ico", "16x16");
 
     }
 }

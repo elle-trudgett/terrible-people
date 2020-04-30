@@ -58,7 +58,7 @@ public class CardPackReader {
                         String[] split = line.split("\\|\\|\\|");
 
                         String cardContent = split[0];
-                        Card newCard = new Card(currentCardType, cardContent);
+                        Card newCard = new Card(currentCardType, packName, cardContent);
 
                         if (cardContent.startsWith("img")) {
                             newCard.setImage(true);
@@ -90,7 +90,7 @@ public class CardPackReader {
 
                         blackCards.add(newCard);
                     } else if (currentCardType == CardType.WHITE) {
-                        whiteCards.add(new Card(currentCardType, line));
+                        whiteCards.add(new Card(currentCardType, packName, line));
                     }
                 }
             }
