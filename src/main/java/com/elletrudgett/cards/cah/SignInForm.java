@@ -9,10 +9,15 @@ import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.TextField;
+import lombok.extern.log4j.Log4j2;
 
 import java.io.UnsupportedEncodingException;
 
+@Log4j2
 public class SignInForm extends FormLayout {
+    public static final int MAX_EMAIL_LENGTH = 50;
+    public static final int MAX_NAME_LENGTH = 12;
+
     public SignInForm(Runnable onLoginRunnable) {
         add(new H1("Who are you?"));
 
@@ -20,8 +25,8 @@ public class SignInForm extends FormLayout {
         TextField nameField = new TextField("Name");
         nameField.setRequired(true);
         nameField.setRequiredIndicatorVisible(true);
-        nameField.setErrorMessage("Please enter a name 2-12 characters.");
-        nameField.setMaxLength(12);
+        nameField.setErrorMessage("Please enter a name 2-" + MAX_NAME_LENGTH + " characters.");
+        nameField.setMaxLength(MAX_NAME_LENGTH);
         nameField.setMinLength(2);
         nameField.setWidthFull();
         add(nameField);
@@ -30,6 +35,7 @@ public class SignInForm extends FormLayout {
         emailField.setClearButtonVisible(true);
         emailField.setErrorMessage("Please enter a valid email address");
         emailField.setWidthFull();
+        emailField.setMaxLength(MAX_EMAIL_LENGTH);
         add(emailField);
 
         Button submitButton = new Button("Submit");
@@ -37,10 +43,14 @@ public class SignInForm extends FormLayout {
         submitButton.setDisableOnClick(true);
         submitButton.addClickListener(event -> {
             try {
-                Statics.saveUser(new User(nameField.getValue().trim(), emailField.getValue().trim()));
+                String name = nameField.getValue().trim();
+                String email = emailField.getValue().trim();
+                if (name.length() > MAX_NAME_LENGTH || email.length() > MAX_EMAIL_LENGTH) {
+                    throw new IllegalArgumentException("Input too large");
+                }
+                Statics.saveUser(new User(name, email));
             } catch (UnsupportedEncodingException e) {
-                // Couldn't save cookies, whatever.
-                e.printStackTrace();
+                log.error("Unable to save user.");
             }
 
             getUI().ifPresent(ui -> onLoginRunnable.run());

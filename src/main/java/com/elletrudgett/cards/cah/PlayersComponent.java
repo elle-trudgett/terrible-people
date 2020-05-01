@@ -86,12 +86,13 @@ public class PlayersComponent extends ScrollPanel {
             ContextMenu contextMenu = new ContextMenu();
             contextMenu.setTarget(container);
             Statics.getPlayerOptional().ifPresent(me -> {
+                boolean iAmVipAndTheyAreNotMe = me != player && me.isVip();
                 MenuItem kickMenuItem = contextMenu.addItem("Kick", event -> getRoom().kickPlayer(me, player));
-                kickMenuItem.setEnabled(me != player);
+                kickMenuItem.setEnabled(iAmVipAndTheyAreNotMe);
                 MenuItem giveVipMenuItem = contextMenu.addItem("Give room control", event -> {
                     getRoom().giveVip(me, player);
                 });
-                giveVipMenuItem.setEnabled(me.isVip() && me != player);
+                giveVipMenuItem.setEnabled(iAmVipAndTheyAreNotMe && !player.isVip());
             });
 
             add(container);

@@ -1,6 +1,7 @@
 package com.elletrudgett.cards.cah.game;
 
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.WrappedSession;
@@ -106,7 +107,11 @@ public class Statics {
     }
 
     public static Optional<User> loadUser() {
-        Cookie[] cookies = VaadinService.getCurrentRequest().getCookies();
+        VaadinRequest currentRequest = VaadinService.getCurrentRequest();
+        if (currentRequest == null) {
+            return Optional.empty();
+        }
+        Cookie[] cookies = currentRequest.getCookies();
 
         boolean foundCookie = false;
         String name = "";
@@ -117,14 +122,18 @@ public class Statics {
                 if (cookie.getName().equals(TERRIBLE_PEOPLE_NAME)) {
                     try {
                         name = URLDecoder.decode(cookie.getValue(), "UTF-8");
-                        foundCookie = true;
+                        if (!name.isEmpty()) {
+                            foundCookie = true;
+                        }
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }
                 } else if (cookie.getName().equals(TERRIBLE_PEOPLE_EMAIL)) {
                     try {
                         email = URLDecoder.decode(cookie.getValue(), "UTF-8");
-                        foundCookie = true;
+                        if (!email.isEmpty()) {
+                            foundCookie = true;
+                        }
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }
@@ -133,5 +142,19 @@ public class Statics {
         }
 
         return foundCookie ? Optional.of(new User(name, email)) : Optional.empty();
+    }
+
+    public static void clearUser() throws UnsupportedEncodingException {
+        // Set the cookie values in the current request
+        for (Cookie cookie : VaadinService.getCurrentRequest().getCookies()) {
+            if (cookie.getName().equals(TERRIBLE_PEOPLE_NAME)) {
+                cookie.setValue("");
+            } else if (cookie.getName().equals(TERRIBLE_PEOPLE_EMAIL)) {
+                cookie.setValue("");
+            }
+        }
+
+        // Update the cookie values in the outgoing response.
+        saveUser(new User("", ""));
     }
 }

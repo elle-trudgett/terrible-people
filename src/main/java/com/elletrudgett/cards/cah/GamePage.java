@@ -79,7 +79,7 @@ public class GamePage extends VerticalLayout {
         submissionsComponent.setVisible(false);
         add(submissionsComponent);
 
-        nextRoundHeader = new H5("Next round will start in 8 seconds.");
+        nextRoundHeader = new H5("Next round will start shortly.");
         nextRoundHeader.setVisible(false);
         add(nextRoundHeader);
 
@@ -250,14 +250,14 @@ public class GamePage extends VerticalLayout {
             // check if it was me that got kicked!
             if (!getRoom().validatePlayer(getPlayer()).isPresent()) {
                 // Time to go.
-                ui.access(() -> Notification.show("You have been kicked from the game.", 3000, Notification.Position.MIDDLE));
+                ui.access(() -> Notification.show("You have been kicked from the game.", 1500, Notification.Position.MIDDLE));
                 removeBroadcasterRegistration();
                 new Timer().schedule(new TimerTask() {
                     @Override
                     public void run() {
-                        ui.access(() -> ui.navigate(""));
+                        ui.getPage().reload();
                     }
-                }, 3000);
+                }, 1500);
             }
         } else if (message.getMessageType() == AbstractGameMessage.MessageType.CardSkipped) {
             ui.access(() -> Notification.show("The card was skipped.", 1000, Notification.Position.MIDDLE));
@@ -276,8 +276,10 @@ public class GamePage extends VerticalLayout {
     }
 
     private void removeBroadcasterRegistration() {
-        broadcasterRegistration.remove();
-        broadcasterRegistration = null;
+        if (broadcasterRegistration != null) {
+            broadcasterRegistration.remove();
+            broadcasterRegistration = null;
+        }
     }
 
     @Getter

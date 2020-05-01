@@ -10,6 +10,7 @@ import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H4;
@@ -20,6 +21,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.shared.Registration;
 import lombok.extern.log4j.Log4j2;
 
+import java.io.UnsupportedEncodingException;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
@@ -33,12 +35,16 @@ public class LobbyPage extends VerticalLayout {
     private Registration broadcasterRegistration;
     private final Div rooms;
     private final Dialog loginDialog;
+    private final H4 whoamI;
 
     public LobbyPage() {
         addClassName("tp-lobby");
 
         add(new H2("Terrible People"));
         add(new H4("by Elle ❤️"));
+
+        whoamI = new H4("");
+        add(whoamI);
 
         loginDialog = new Dialog();
         loginDialog.setCloseOnEsc(false);
@@ -69,6 +75,7 @@ public class LobbyPage extends VerticalLayout {
 
     private void onLogin() {
         loginDialog.close();
+        UI.getCurrent().getPage().reload();
     }
 
     private void loginIfNecessary() {
@@ -101,6 +108,24 @@ public class LobbyPage extends VerticalLayout {
         });
 
         checkIfAlreadyInGame(ui);
+
+        Statics.loadUser().ifPresent(user -> {
+            if (user.getEmail().isEmpty()) {
+                whoamI.add("Logged in as " + user.getName() + ". ");
+            } else {
+                whoamI.add("Logged in as " + user.getName() + " (" + user.getEmail() + "). ");
+            }
+            Anchor logOutLink = new Anchor("#", "Log out?");
+            logOutLink.getElement().addEventListener("click", e -> {
+                try {
+                    Statics.clearUser();
+                    UI.getCurrent().getPage().reload();
+                } catch (UnsupportedEncodingException ex) {
+                    log.error("Unable to clear user");
+                }
+            });
+            whoamI.add(logOutLink);
+        });
     }
 
     private void checkIfAlreadyInGame(UI ui) {
