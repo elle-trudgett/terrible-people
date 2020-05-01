@@ -1,8 +1,8 @@
 package com.elletrudgett.cards.cah;
 
-import com.elletrudgett.cards.cah.game.GameState;
 import com.elletrudgett.cards.cah.game.GameStatus;
 import com.elletrudgett.cards.cah.game.Player;
+import com.elletrudgett.cards.cah.game.Statics;
 import com.vaadin.flow.component.contextmenu.ContextMenu;
 import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.html.Div;
@@ -15,13 +15,15 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import static com.elletrudgett.cards.cah.game.Statics.getRoom;
+
 @Data
 public class PlayersComponent extends ScrollPanel {
     public static final String GRAVATAR_URL = "https://www.gravatar.com/avatar/";
 
     public PlayersComponent() {
         addClassName("tp-players-component");
-        update(GameState.getInstance().getPlayers());
+        update(Collections.emptyList());
     }
 
     public void update(List<Player> players) {
@@ -77,23 +79,20 @@ public class PlayersComponent extends ScrollPanel {
             if (player.isVip()) {
                 container.add(vipDiv);
             }
-            if (GameState.getInstance().isCzar(player) && GameState.getInstance().getStatus() != GameStatus.WAITING) {
+            if (getRoom().isCzar(player) && getRoom().getStatus() != GameStatus.WAITING) {
                 container.add(czarDiv);
             }
 
             ContextMenu contextMenu = new ContextMenu();
             contextMenu.setTarget(container);
-            Player me = GameState.getCurrentPlayer();
-            if (me != null) {
-                MenuItem kickMenuItem = contextMenu.addItem("Kick", event -> {
-                    GameState.getInstance().kickPlayer(me, player);
-                });
+            Statics.getPlayerOptional().ifPresent(me -> {
+                MenuItem kickMenuItem = contextMenu.addItem("Kick", event -> getRoom().kickPlayer(me, player));
                 kickMenuItem.setEnabled(me != player);
                 MenuItem giveVipMenuItem = contextMenu.addItem("Give room control", event -> {
-                    GameState.getInstance().giveVip(me, player);
+                    getRoom().giveVip(me, player);
                 });
                 giveVipMenuItem.setEnabled(me.isVip() && me != player);
-            }
+            });
 
             add(container);
         }

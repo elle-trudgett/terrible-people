@@ -1,9 +1,8 @@
 package com.elletrudgett.cards.cah.game;
 
 import com.elletrudgett.cards.cah.Broadcaster;
-import com.elletrudgett.cards.cah.game.messages.GameStateUpdateMessage;
+import com.elletrudgett.cards.cah.game.messages.GameUpdateMessage;
 import com.elletrudgett.cards.cah.game.messages.ResetGameMessage;
-import com.vaadin.flow.server.VaadinSession;
 import lombok.Data;
 import lombok.Getter;
 import org.apache.commons.lang3.tuple.Pair;
@@ -13,18 +12,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Data
-public class GameState {
+public class Room {
     private static final Random RNG = new Random();
 
     @Getter
-    private static final Map<UUID, GameState> gameStateInstances = new HashMap<>();
-
-    @Deprecated
-    private static GameState instance = new GameState();
-
-    static {
-        gameStateInstances.put(instance.getUuid(), instance);
-    }
+    private static final Map<UUID, Room> rooms = new HashMap<>();
 
     private String name = "Unnamed room";
     private final UUID uuid;
@@ -49,31 +41,32 @@ public class GameState {
     private boolean skippedOnce = false;
     private Player winner = null;
 
-    private GameState() {
+    private Room() {
         uuid = UUID.randomUUID();
         setupDecks();
         PlayerActivityChecker.monitor(this);
     }
 
-    /**
-     * Deprecated now that there are multiple rooms. Instead get by UUID.
-     */
-    @Deprecated
-    public static GameState getInstance() {
-        return getInstance(instance.getUuid()).orElseThrow(IllegalStateException::new);
+    public static Optional<Room> get(UUID uuid) {
+        return Optional.ofNullable(rooms.get(uuid));
     }
 
-    public static Optional<GameState> getInstance(UUID uuid) {
-        return Optional.ofNullable(gameStateInstances.get(uuid));
-    }
-
-    public static Player getCurrentPlayer() {
-        Player player = (Player) VaadinSession.getCurrent().getSession().getAttribute("player");
-        if (player == null) {
-            return null;
+    public static Room create(String roomName) {
+        if (rooms.size() >= 5) {
+            throw new UnsupportedOperationException("Too many rooms");
         }
+        Room newRoom = new Room();
+        newRoom.setName(roomName);
+        rooms.put(newRoom.getUuid(), newRoom);
+        Broadcaster.broadcast(new LobbyUpdateMessage());
+        return newRoom;
+    }
 
-        return getInstance().validatePlayer(player).orElse(null);
+    private static void destroy(UUID roomUuid) {
+        if (rooms.containsKey(roomUuid)) {
+            rooms.remove(roomUuid);
+            Broadcaster.broadcast(new LobbyUpdateMessage());
+        }
     }
 
     public void endGame() {
@@ -84,7 +77,7 @@ public class GameState {
         startedAt = Instant.now();
         resetPlayers();
         prepareForNewGame();
-        broadcastThisGameState();
+        broadcast();
     }
 
     private void setupDecks() {
@@ -169,7 +162,7 @@ public class GameState {
 
         playPhase = PlayPhase.ANSWERING_QUESTION;
         playTimestamp = Instant.now();
-        broadcastThisGameState();
+        broadcast();
     }
 
     public void remove(Player player) {
@@ -209,7 +202,11 @@ public class GameState {
             if (players.size() < 2) {
                 endGame(); // this will broadcast the game state
             } else {
-                broadcastThisGameState(); // otherwise it needs to be broadcasted
+                broadcast(); // otherwise it needs to be broadcasted
+            }
+
+            if (players.isEmpty()) {
+                destroy(uuid);
             }
         }
     }
@@ -226,7 +223,7 @@ public class GameState {
                 }
             }
         }
-        broadcastThisGameState();
+        broadcast();
     }
 
     public String getCzarName() {
@@ -257,7 +254,7 @@ public class GameState {
                 computeScoreLimit();
             }
             players.add(player);
-            broadcastThisGameState();
+            broadcast();
         }
     }
 
@@ -304,12 +301,12 @@ public class GameState {
             playPhase = PlayPhase.DELIBERATING;
             playTimestamp = Instant.now();
             Collections.shuffle(submissions); // make sure we can't tell whose is whose.
-            broadcastThisGameState();
+            broadcast();
         }
     }
 
-    private void broadcastThisGameState() {
-        Broadcaster.broadcast(new GameStateUpdateMessage(this));
+    private void broadcast() {
+        Broadcaster.broadcast(new GameUpdateMessage(this));
     }
 
     private List<String> getWaitingOnNames() {
@@ -335,7 +332,7 @@ public class GameState {
             player.setScore(newPlayerScore);
             roundWinner = player;
 
-            broadcastThisGameState();
+            broadcast();
 
             new Timer().schedule(
                     new TimerTask() {
@@ -356,7 +353,7 @@ public class GameState {
     private void finishGameWithWinner(Player winner) {
         status = GameStatus.GAME_OVER;
         this.winner = winner;
-        broadcastThisGameState();
+        broadcast();
     }
 
     private void endRound() {
@@ -421,7 +418,7 @@ public class GameState {
         broadcastNeeded |= player.isActive() != active;
 
         if (broadcastNeeded) {
-            broadcastThisGameState();
+            broadcast();
         }
     }
 
@@ -448,7 +445,7 @@ public class GameState {
         if (giver.isVip()) {
             giver.setVip(false);
             taker.setVip(true);
-            broadcastThisGameState();
+            broadcast();
         }
     }
 

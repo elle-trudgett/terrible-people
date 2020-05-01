@@ -1,7 +1,6 @@
 package com.elletrudgett.cards.cah;
 
 import com.elletrudgett.cards.cah.game.Card;
-import com.elletrudgett.cards.cah.game.GameState;
 import com.elletrudgett.cards.cah.game.Player;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H3;
@@ -10,6 +9,8 @@ import lombok.Data;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
+
+import static com.elletrudgett.cards.cah.game.Statics.getRoom;
 
 @Data
 public class SubmissionsComponent extends VerticalLayout {
@@ -26,7 +27,7 @@ public class SubmissionsComponent extends VerticalLayout {
 
         removeAll();
 
-        String czarName = GameState.getInstance().getCzarName();
+        String czarName = getRoom().getCzarName();
         String headerText = iAmCzar ? "Choose the winner:" : czarName + " is choosing...";
         if (roundWinner != null) {
             headerText = roundWinner.getName() + " wins the round!";
@@ -45,7 +46,7 @@ public class SubmissionsComponent extends VerticalLayout {
             // Give czar clicking ability if winner hasn't been chosen yet
             if (roundWinner == null && iAmCzar) {
                 playerSubmission.setSubmissionCardClickedConsumer(e -> {
-                    GameState.getInstance().selectAnswer(player);
+                    getRoom().selectAnswer(player);
                 });
                 playerSubmission.update(submissionList, submissionList.size());
             }

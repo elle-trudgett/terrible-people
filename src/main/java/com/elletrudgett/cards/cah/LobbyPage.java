@@ -1,19 +1,22 @@
 package com.elletrudgett.cards.cah;
 
-import com.elletrudgett.cards.cah.game.GameState;
 import com.elletrudgett.cards.cah.game.Player;
+import com.elletrudgett.cards.cah.game.Room;
+import com.elletrudgett.cards.cah.game.Statics;
+import com.elletrudgett.cards.cah.game.User;
 import com.elletrudgett.cards.cah.game.messages.AbstractGameMessage;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H4;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.shared.Registration;
 import lombok.extern.log4j.Log4j2;
 
@@ -21,13 +24,15 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.elletrudgett.cards.cah.game.Statics.loadUser;
+
 @Route(value = "", layout = MainLayout.class)
 @PageTitle("Terrible People")
 @Log4j2
 public class LobbyPage extends VerticalLayout {
     private Registration broadcasterRegistration;
     private final Div rooms;
-    private UUID selectedRoom;
+    private final Dialog loginDialog;
 
     public LobbyPage() {
         addClassName("tp-lobby");
@@ -35,10 +40,41 @@ public class LobbyPage extends VerticalLayout {
         add(new H2("Terrible People"));
         add(new H4("by Elle ❤️"));
 
+        loginDialog = new Dialog();
+        loginDialog.setCloseOnEsc(false);
+        loginDialog.setCloseOnOutsideClick(false);
+        loginDialog.add(new SignInForm(this::onLogin));
+        loginIfNecessary();
+
+        Button createRoomButton = new Button("Create room");
+        createRoomButton.setWidthFull();
+        createRoomButton.addClickListener(event -> {
+            try {
+                loginIfNecessary();
+                loadUser().ifPresent(user -> {
+                    Room newRoom = Room.create(loadUser().map(u -> u.getName() + "'s room").orElse("Unnamed room"));
+                    joinRoom(newRoom.getUuid());
+                });
+            } catch (Exception e) {
+                Notification.show("Couldn't create room: " + e.getMessage(), 3000, Notification.Position.MIDDLE);
+            }
+        });
+        add(createRoomButton);
+
         rooms = new Div();
         add(rooms);
 
         update();
+    }
+
+    private void onLogin() {
+        loginDialog.close();
+    }
+
+    private void loginIfNecessary() {
+        if (!loadUser().isPresent()) {
+            loginDialog.open();
+        }
     }
 
     private String chooseMotto() {
@@ -68,11 +104,11 @@ public class LobbyPage extends VerticalLayout {
     }
 
     private void checkIfAlreadyInGame(UI ui) {
-        Player player = (Player) VaadinSession.getCurrent().getSession().getAttribute("player");
-        if (player != null) {
-            if (player.getRoom() != null) {
-                // We have an existing player in a room, check if they are still in that room
-                Optional<GameState> roomOptional = GameState.getInstance(player.getRoom());
+        if (Statics.hasPlayer()) {
+            Player player = Statics.getPlayer();
+            if (player.getRoomUuid() != null) {
+                // We have an existing player in a roomUuid, check if they are still in that roomUuid
+                Optional<Room> roomOptional = Room.get(player.getRoomUuid());
                 if (roomOptional.isPresent()) {
                     Optional<Player> validatedPlayer = roomOptional.get().validatePlayer(player);
                     if (validatedPlayer.isPresent()) {
@@ -94,23 +130,47 @@ public class LobbyPage extends VerticalLayout {
 
     private void update() {
         rooms.removeAll();
-        for (GameState room : GameState.getGameStateInstances().values()) {
-            RoomComponent progress = new RoomComponent();
-            progress.update(room);
+        for (Room room : Room.getRooms().values()) {
+            RoomComponent progress = new RoomComponent(room);
             progress.addClickListener(event -> {
-                selectedRoom = room.getUuid();
+                UUID selectedRoomUuid = room.getUuid();
+                Optional<User> userOptional = loadUser();
 
-                Dialog loginDialog = new Dialog();
-                loginDialog.add(new SignInForm(loginDialog::close));
-                loginDialog.open();
+                loginIfNecessary();
+                joinRoom(selectedRoomUuid);
             });
-            add(progress);
+            rooms.add(progress);
         }
     }
 
+    private void joinRoom(UUID selectedRoomUuid) {
+        UI ui = UI.getCurrent();
+        ui.access(() -> {
+            loadUser().ifPresent(user -> {
+                Player player = new Player(
+                        user.getName(),
+                        MD5Helper.md5Hex(user.getEmail()),
+                        ui.getSession().getBrowser()
+                );
+                player.setRoomUuid(selectedRoomUuid);
+                Statics.setPlayer(ui, player);
+                Optional<Room> roomOptional = Room.get(selectedRoomUuid);
+                if (roomOptional.isPresent()) {
+                    Room room = roomOptional.get();
+                    room.addPlayer(player);
+                    Statics.setRoom(ui, room);
+                    ui.navigate("game");
+                } else {
+                    Notification.show("Failed to join the room.", 3000, Notification.Position.MIDDLE);
+                }
+            });
+        });
+    }
+
+    /**
+     * Todo: Make me scalable
+     */
     private void handleMessage(UI ui, AbstractGameMessage message) {
-        if (message.getMessageType() == AbstractGameMessage.MessageType.GameStateUpdate) {
-            ui.access(this::update);
-        }
+        ui.access(this::update);
     }
 }

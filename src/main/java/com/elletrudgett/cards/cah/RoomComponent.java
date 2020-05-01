@@ -1,8 +1,8 @@
 package com.elletrudgett.cards.cah;
 
-import com.elletrudgett.cards.cah.game.GameState;
 import com.elletrudgett.cards.cah.game.GameStatus;
 import com.elletrudgett.cards.cah.game.Player;
+import com.elletrudgett.cards.cah.game.Room;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H5;
 import org.apache.commons.lang3.StringUtils;
@@ -15,7 +15,7 @@ public class RoomComponent extends Div {
     private final Div gameStatusText;
     private final H5 header;
 
-    public RoomComponent() {
+    public RoomComponent(Room room) {
         addClassName("tp-room");
 
         header = new H5();
@@ -26,25 +26,25 @@ public class RoomComponent extends Div {
         gameStatusText = new Div();
         add(gameStatusText);
 
-        update(GameState.getInstance());
+        update(room);
     }
 
-    public void update(GameState gameState) {
-        header.setText(gameState.getName());
+    public void update(Room room) {
+        header.setText(room.getName());
 
-        List<Player> players = gameState.getPlayers();
+        List<Player> players = room.getPlayers();
         if (players.isEmpty()) {
             playersListText.setText("No players yet");
         } else {
             playersListText.setText(players.size() + " players: " + StringUtils.join(players.stream().map(Player::getName).collect(Collectors.toList()), ", "));
         }
-        if (gameState.getStatus() == GameStatus.WAITING) {
+        if (room.getStatus() == GameStatus.WAITING) {
             gameStatusText.setText("Waiting to start");
-        } else if (gameState.getStatus() == GameStatus.PLAYING) {
-            gameStatusText.setText("Game in progress (Round " + gameState.getRound() + ")");
-        } else if (gameState.getStatus() == GameStatus.GAME_OVER) {
-            if (gameState.getWinner() != null) {
-                gameStatusText.setText("Game finished. Winner: " + gameState.getWinner().getName());
+        } else if (room.getStatus() == GameStatus.PLAYING) {
+            gameStatusText.setText("Game in progress (Round " + room.getRound() + ")");
+        } else if (room.getStatus() == GameStatus.GAME_OVER) {
+            if (room.getWinner() != null) {
+                gameStatusText.setText("Game finished. Winner: " + room.getWinner().getName());
             } else {
                 gameStatusText.setText("Game finished.");
             }

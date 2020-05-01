@@ -1,7 +1,7 @@
 package com.elletrudgett.cards.cah;
 
-import com.elletrudgett.cards.cah.game.GameState;
 import com.elletrudgett.cards.cah.game.Player;
+import com.elletrudgett.cards.cah.game.Room;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Image;
@@ -23,7 +23,7 @@ public class WinnerDisplayComponent extends Div {
         add(h2);
     }
 
-    public void update(GameState gs) {
+    public void update(Room gs) {
         Player winner = gs.getWinner();
         setVisible(winner != null);
         if (winner != null) {

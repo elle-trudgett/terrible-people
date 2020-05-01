@@ -7,14 +7,14 @@ import java.util.concurrent.Executors;
 public class PlayerActivityChecker {
     private static final ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(5);
 
-    public static void monitor(GameState gameState) {
+    public static void monitor(Room room) {
         EXECUTOR_SERVICE.submit(() -> {
             while (true) {
-                for (Player player : gameState.getPlayers()) {
+                for (Player player : room.getPlayers()) {
                     if (Instant.now().isAfter(player.getLastHeartbeat().plusSeconds(5))) {
-                        gameState.setPlayerActive(player, false);
+                        room.setPlayerActive(player, false);
                     } else {
-                        gameState.setPlayerActive(player, true);
+                        room.setPlayerActive(player, true);
                     }
                 }
                 Thread.sleep(1000);

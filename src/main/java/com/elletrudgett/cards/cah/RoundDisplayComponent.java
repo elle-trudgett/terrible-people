@@ -37,7 +37,7 @@ public class RoundDisplayComponent extends HorizontalLayout {
         add(winnerDisplayComponent);
     }
 
-    public void update(GameState gs, boolean iAmCzar) {
+    public void update(Room gs, boolean iAmCzar) {
         if (gs.getStatus() == GameStatus.PLAYING) {
             czarDisplayAreaComponent.setVisible(true);
             czarDisplayAreaComponent.update(gs);
@@ -85,7 +85,7 @@ public class RoundDisplayComponent extends HorizontalLayout {
             blackCardDisplayComponent.update(null);
         }
 
-        private void update(GameState gs) {
+        private void update(Room gs) {
             Card gsBlackCard = gs.getCurrentBlackCard();
             blackCardDisplayComponent.update(gsBlackCard);
             if (gs.getPlayPhase() == PlayPhase.DELIBERATING) {

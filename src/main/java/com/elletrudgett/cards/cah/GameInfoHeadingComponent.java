@@ -1,6 +1,6 @@
 package com.elletrudgett.cards.cah;
 
-import com.elletrudgett.cards.cah.game.GameState;
+import com.elletrudgett.cards.cah.game.Room;
 import com.vaadin.flow.component.html.H5;
 import com.vaadin.flow.component.html.Span;
 
@@ -8,7 +8,7 @@ public class GameInfoHeadingComponent extends H5 {
     public GameInfoHeadingComponent() {
     }
 
-    public void update(GameState gs) {
+    public void update(Room gs) {
         removeAll();
 
         add(new Span(gs.getName()));

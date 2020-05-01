@@ -2,11 +2,11 @@ package com.elletrudgett.cards.cah.game.messages;
 
 public abstract class AbstractGameMessage {
     public enum MessageType {
-        GameStateUpdate,
+        GameUpdate,
         PlayerKicked,
         CardSkipped,
         ResetGame,
-        WaitingOn
+        LobbyUpdate, WaitingOn
     }
 
     public abstract MessageType getMessageType();
