@@ -9,6 +9,7 @@ import lombok.Data;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.elletrudgett.cards.cah.game.Statics.getRoom;
 
@@ -46,7 +47,11 @@ public class SubmissionsComponent extends VerticalLayout {
             // Give czar clicking ability if winner hasn't been chosen yet
             if (roundWinner == null && iAmCzar) {
                 playerSubmission.setSubmissionCardClickedConsumer(e -> {
-                    getRoom().selectAnswer(player);
+                    ConfirmAnswerDialog dialog = new ConfirmAnswerDialog(
+                            submissionList.stream().map(Card::getContent).collect(Collectors.toList()),
+                            () -> getRoom().selectAnswer(player)
+                    );
+                    dialog.open();
                 });
                 playerSubmission.update(submissionList, submissionList.size());
             }

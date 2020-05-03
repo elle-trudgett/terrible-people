@@ -65,7 +65,7 @@ public class GamePage extends VerticalLayout {
         handComponent.setVisible(false);
         add(handComponent);
 
-        submitButton = new Button("Submit");
+        submitButton = new Button("Submit your Entry");
         submitButton.setWidthFull();
         submitButton.addClickListener(buttonClickEvent -> {
             getRoom().submit(getPlayer(), handComponent.getSelected());
@@ -73,6 +73,7 @@ public class GamePage extends VerticalLayout {
         });
         submitButton.setVisible(false);
         submitButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        submitButton.addClassName("tp-submit-button");
         add(submitButton);
 
         submissionsComponent = new SubmissionsComponent();

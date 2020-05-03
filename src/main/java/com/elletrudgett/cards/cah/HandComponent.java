@@ -39,8 +39,9 @@ public class HandComponent extends Div {
         add(handDiv);
     }
 
-    private void submissionCardClicked(Card cardCliened) {
-        selected.removeIf(card -> card.equals(cardCliened));
+    private void submissionCardClicked(Card cardClicked) {
+        // Just clear the whole thing because it's not like you can really click each card individually now anyway.
+        selected.clear();
         selectedChanged.run();
         update();
     }
@@ -58,7 +59,7 @@ public class HandComponent extends Div {
         for (Card card : hand) {
             Span handCard = new Span(card.isImage() ? "" : card.getContent());
             if (card.isImage()) {
-                Image image = new Image("/frontend/" + card.getContent(), card.getContent());
+                Image image = new Image("/frontend/" + card.getImage(), card.getContent());
                 image.addClassName("tp-white-card-image");
                 handCard.add(image);
             }

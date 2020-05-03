@@ -3,10 +3,8 @@ package com.elletrudgett.cards.cah;
 import com.elletrudgett.cards.cah.game.*;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
@@ -17,16 +15,23 @@ public class RoundDisplayComponent extends HorizontalLayout {
 
     private final CzarDisplayAreaComponent czarDisplayAreaComponent;
     private final WinnerDisplayComponent winnerDisplayComponent;
+    private final H5 czarNameComponent;
     private Button skipButton;
 
     public RoundDisplayComponent(PlayerSubmission mySubmissionComponent, Runnable skipRunnable) {
         addClassName("tp-round-display-component");
+
+        czarNameComponent = new H5("");
+        czarNameComponent.addClassName("tp-czar-name-component");
+        add(czarNameComponent);
+
         czarDisplayAreaComponent = new CzarDisplayAreaComponent();
         add(czarDisplayAreaComponent);
         mySubmissionComponent.addClassName("tp-my-submission-component");
         add(mySubmissionComponent);
         skipButton = new Button("Skip this card");
         skipButton.getStyle().set("margin-left", "-4em");
+        skipButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         add(skipButton);
         skipButton.addClickListener(event -> {
             skipRunnable.run();
@@ -52,6 +57,12 @@ public class RoundDisplayComponent extends HorizontalLayout {
         }
 
         winnerDisplayComponent.update(gs);
+
+        if (!iAmCzar) {
+            czarNameComponent.setText(gs.getCzarName() + "'s Black Card");
+        } else {
+            czarNameComponent.setText("Your black card!");
+        }
     }
 
     private class CzarDisplayAreaComponent extends VerticalLayout {

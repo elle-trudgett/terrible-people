@@ -5,6 +5,7 @@ import com.elletrudgett.cards.cah.game.messages.GameUpdateMessage;
 import com.elletrudgett.cards.cah.game.messages.ResetGameMessage;
 import lombok.Data;
 import lombok.Getter;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.time.Instant;
@@ -12,6 +13,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Data
+@Log4j2
 public class Room {
     private static final Random RNG = new Random();
 
@@ -171,21 +173,37 @@ public class Room {
                 computeScoreLimit();
             }
 
+            // Ensure the csar doesn't change because player indexes are shuffled
+            int playerIndex = players.indexOf(player);
+            if (playerIndex < cardCzar) {
+                cardCzar -= 1;
+            }
+
             players.remove(player);
+
+            validateCardCzar();
+
             if (player.isVip()) {
                 assignNewVip();
             }
 
+            // Clean up submissions / return cards to hands that should have them.
             Iterator<Pair<Player, List<Card>>> iterator = submissions.iterator();
             while (iterator.hasNext()) {
                 Pair<Player, List<Card>> submission = iterator.next();
                 Player submissionPlayer = submission.getKey();
                 // Remove submissions from this player who left
-//                if (submissionPlayer.equals(player)) {
-//                    iterator.remove();
-//                }
+    //                if (submissionPlayer.equals(player)) {
+    //                    iterator.remove();
+    //                }
                 // This is confusing as it can shuffle the cards right under the Czar's fingertips.
                 // leave it in for now.
+
+                // Remove submissions from the czar (this should not happen though!)
+                if (isCzar(submissionPlayer)) {
+                    log.warn("Removing czar's submissions..?");
+                    iterator.remove();
+                }
 
                 // Return cards that were submitted by the new Czar to their hand
                 if (getCardCzarPlayer().isPresent() && submissionPlayer.equals(getCardCzarPlayer().get())) {
@@ -233,6 +251,8 @@ public class Room {
     private void validateCardCzar() {
         if (cardCzar >= players.size()) {
             cardCzar = 0;
+        } else if (cardCzar < 0) {
+            cardCzar = players.size() - 1;
         }
     }
 

@@ -11,7 +11,7 @@ public class Card {
     private String content;
     private final String pack;
     private final EnumSet<CardSpecialEffect> effects = EnumSet.noneOf(CardSpecialEffect.class);
-    private boolean isImage = false;
+    private String image;
 
     // Makes each card instance unique.
     private final UUID uuid;
@@ -21,5 +21,9 @@ public class Card {
         this.pack = pack;
         this.content = content;
         this.uuid = UUID.randomUUID();
+    }
+
+    public boolean isImage() {
+        return image != null && image.length() > 0;
     }
 }

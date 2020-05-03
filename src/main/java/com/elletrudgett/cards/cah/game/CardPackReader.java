@@ -65,10 +65,6 @@ public class CardPackReader {
                         String cardContent = split[0];
                         Card newCard = new Card(currentCardType, packName, cardContent);
 
-                        if (cardContent.startsWith("img")) {
-                            newCard.setImage(true);
-                        }
-
                         if (split.length > 1) {
                             if (split[1].contains("PICK 2")) {
                                 newCard.getEffects().add(CardSpecialEffect.PICK_2);
@@ -95,7 +91,15 @@ public class CardPackReader {
 
                         blackCards.add(newCard);
                     } else if (currentCardType == CardType.WHITE) {
-                        whiteCards.add(new Card(currentCardType, packName, line));
+                        Card newCard = new Card(currentCardType, packName, line);
+
+                        if (line.startsWith("img") && line.contains("|||")) {
+                            String[] split = line.split("\\|\\|\\|");
+                            newCard.setImage(split[0]);
+                            newCard.setContent(split[1]);
+                        }
+
+                        whiteCards.add(newCard);
                     }
                 }
             }

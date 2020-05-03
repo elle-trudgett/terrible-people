@@ -32,7 +32,7 @@ class PlayerSubmission extends HorizontalLayout {
         for (Card card : submission) {
             Span cardSpan = new Span(card.isImage() ? "" : card.getContent());
             if (card.isImage()) {
-                Image image = new Image("/frontend/" + card.getContent(), card.getContent());
+                Image image = new Image("/frontend/" + card.getImage(), card.getContent());
                 image.addClassName("tp-white-card-image");
                 cardSpan.add(image);
             }
@@ -54,8 +54,12 @@ class PlayerSubmission extends HorizontalLayout {
             packDiv.add(new Text(card.getPack()));
             cardSpan.add(packDiv);
 
-            if (i > 0 && !mySubmission) {
-                cardSpan.getStyle().set("margin-left", "-2em");
+            if (!mySubmission) {
+                if (i > 0) {
+                    cardSpan.getStyle().set("margin-left", "-2em");
+                } else {
+                    cardSpan.getStyle().set("margin-left", "-0.25em");
+                }
             }
 
             if (spaces == 2) {
@@ -63,11 +67,13 @@ class PlayerSubmission extends HorizontalLayout {
                     cardSpan.getStyle().set("transform", "rotate(-3deg)");
                     if (mySubmission) {
                         cardSpan.getStyle().set("margin-left", "-0.5em");
+                        cardSpan.getStyle().set("z-index", "20");
                     }
                 } else {
                     cardSpan.getStyle().set("transform", "rotate(3deg)");
                     if (mySubmission) {
                         cardSpan.getStyle().set("margin-left", "-9.5em");
+                        cardSpan.getStyle().set("z-index", "10");
                     }
                 }
             } else if (spaces == 3) {
@@ -75,15 +81,19 @@ class PlayerSubmission extends HorizontalLayout {
                     cardSpan.getStyle().set("transform", "rotate(-5deg)");
                     if (mySubmission) {
                         cardSpan.getStyle().set("margin-left", "-1em");
+                        cardSpan.getStyle().set("z-index", "30");
                     }
                 } else if (i == 1) {
+                    cardSpan.getStyle().set("margin-top", "-1em");
                     if (mySubmission) {
                         cardSpan.getStyle().set("margin-left", "-9.5em");
+                        cardSpan.getStyle().set("z-index", "20");
                     }
                 } else if (i == 2) {
                     cardSpan.getStyle().set("transform", "rotate(5deg)");
                     if (mySubmission) {
                         cardSpan.getStyle().set("margin-left", "-9.5em");
+                        cardSpan.getStyle().set("z-index", "10");
                     }
                 }
             }
