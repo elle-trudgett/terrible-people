@@ -34,7 +34,10 @@ public class SubmissionsComponent extends VerticalLayout {
             headerText = roundWinner.getName() + " wins the round!";
         }
         winnerHeader = new H3(headerText);
-        winnerHeader.getStyle().set("margin", "0");
+        winnerHeader.addClassName("tp-winner-header");
+        if (iAmCzar || roundWinner != null) {
+            winnerHeader.addClassName("breathing");
+        }
         add(winnerHeader);
 
         Div submissionsDiv = new Div();

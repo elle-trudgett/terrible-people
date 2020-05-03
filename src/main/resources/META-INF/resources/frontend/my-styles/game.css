@@ -417,6 +417,9 @@
 }
 
 .tp-submit-button {
+}
+
+.breathing {
     -webkit-animation: breathing 3s ease-out infinite normal;
     animation: breathing 3s ease-out infinite normal;
 }
@@ -487,4 +490,10 @@
     margin-top: var(--lumo-space-l);
     padding: 0 var(--lumo-space-l);
     background-color: var(--lumo-contrast-5pct);
+}
+
+.tp-winner-header {
+    margin: 0;
+    text-align: center;
+    width: 100%;
 }

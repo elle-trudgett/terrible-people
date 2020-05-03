@@ -73,7 +73,7 @@ public class GamePage extends VerticalLayout {
         });
         submitButton.setVisible(false);
         submitButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        submitButton.addClassName("tp-submit-button");
+        submitButton.addClassNames("tp-submit-button", "breathing");
         add(submitButton);
 
         submissionsComponent = new SubmissionsComponent();
